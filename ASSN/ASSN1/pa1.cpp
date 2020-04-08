@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <string.h>
 #include "utils.h"
 
 using namespace std;
@@ -136,32 +137,19 @@ void task_3(ofstream &fout, InstructionSequence* instr_seq) {
             return true;
         }
 
-        char* print_list(){
-            char* list_str = new char[get_str_length()];
-            int len_str = 0;
+        bool make_str(string& ans){
             element* e = list;
-
-            for(; e->next != nullptr; e = e->next){
-                len_str += sprintf(list_str+len_str,"%d ", e->value);
-            }
-            len_str += sprintf(list_str + len_str, "%d", e->value);
-            list_str[len_str] = '\0';
-            return list_str;
-        }
-
-        int get_str_length(){
-            int len = 0, target = 0;
-            element* e = list;
-
-            for(; e != nullptr; e=e->next){
-                target = e->value;
-                while(target) {
-                    target = int(target/10);
-                    len++;
+            if(e == nullptr){
+                return false;
+            } else {
+                for(; e->next != nullptr; e=e->next){
+                    ans+=to_string(e->value);
+                    ans+=" ";
                 }
-                len++;
+                ans+= to_string(e->value);
+                return true;
             }
-            return (len - 1);
+
         }
     };
 
@@ -187,7 +175,9 @@ void task_3(ofstream &fout, InstructionSequence* instr_seq) {
     }
 
     if(success){
-        answer=l.print_list();
+        if(!(l.make_str(answer))){
+            answer="error";
+        }
     } else {
         answer="error";
     }
@@ -237,32 +227,19 @@ void task_4(ofstream &fout, InstructionSequence* instr_seq) {
             top = tmp;
         }
 
-        char* print_list(){
-            char* list_str = new char[get_str_length()];
-            int len_str = 0;
+        bool make_str(string& ans){
             element* e = top;
-
-            for(; e->next != nullptr; e = e->next){
-                len_str += sprintf(list_str+len_str,"%d ", e->value);
-            }
-            len_str += sprintf(list_str + len_str, "%d", e->value);
-            list_str[len_str] = '\0';
-            return list_str;
-        }
-
-        int get_str_length(){
-            int len = 0, target = 0;
-            element* e = top;
-
-            for(; e != nullptr; e=e->next){
-                target = e->value;
-                while(target) {
-                    target = int(target/10);
-                    len++;
+            if(e == nullptr){
+                return false;
+            } else {
+                for(; e->next != nullptr; e=e->next){
+                    ans+=to_string(e->value);
+                    ans+=" ";
                 }
-                len++;
+                ans+= to_string(e->value);
+                return true;
             }
-            return (len - 1);
+
         }
 
         
@@ -278,7 +255,7 @@ void task_4(ofstream &fout, InstructionSequence* instr_seq) {
             exit(-1);
         }
     }
-    answer = s.print_list();
+    s.make_str(answer);
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
@@ -338,32 +315,19 @@ void task_5(ofstream &fout, InstructionSequence* instr_seq) {
             return true;
         }
 
-        char* print_list(){
-            char* list_str = new char[get_str_length()];
-            int len_str = 0;
+        bool make_str(string& ans){
             element* e = top;
-
-            for(; e->next != nullptr; e = e->next){
-                len_str += sprintf(list_str+len_str,"%d ", e->value);
-            }
-            len_str += sprintf(list_str + len_str, "%d", e->value);
-            list_str[len_str] = '\0';
-            return list_str;
-        }
-
-        int get_str_length(){
-            int len = 0, target = 0;
-            element* e = top;
-
-            for(; e != nullptr; e=e->next){
-                target = e->value;
-                while(target) {
-                    target = int(target/10);
-                    len++;
+            if(e == nullptr){
+                return false;
+            } else {
+                for(; e->next != nullptr; e=e->next){
+                    ans+=to_string(e->value);
+                    ans+=" ";
                 }
-                len++;
+                ans+= to_string(e->value);
+                return true;
             }
-            return (len - 1);
+
         }
 
     };
@@ -390,7 +354,9 @@ void task_5(ofstream &fout, InstructionSequence* instr_seq) {
     } else if (s.top == nullptr) {
         answer = "empty";
     } else {
-        answer = s.print_list();
+        if(!(s.make_str(answer))){
+            answer="error";
+        }
     }
 
 
@@ -472,32 +438,19 @@ void task_6(ofstream &fout, InstructionSequence* instr_seq) {
             return true;
         }
 
-        char* print_list(){
-            char* queue_str = new char[get_str_length()];
-            int len_str = 0;
-            element* e = tail;
-
-            for(; e->prev != nullptr; e = e->prev){
-                len_str += sprintf(queue_str + len_str, "%d ", e->value);
-            }
-            len_str += sprintf(queue_str + len_str, "%d", e->value);
-            queue_str[len_str] = '\0';
-            return queue_str;
-        }
-
-        int get_str_length(){
-            int len = 0, target = 0;
-            element* e = head;
-
-            for(; e != nullptr; e=e->next){
-                target = e->value;
-                while(target) {
-                    target = int(target/10);
-                    len++;
+        bool make_str(string& ans) {
+            element *e = tail;
+            if (e == nullptr) {
+                return false;
+            } else {
+                for (; e->prev != nullptr; e = e->prev) {
+                    ans += to_string(e->value);
+                    ans += " ";
                 }
-                len++;
+                ans += to_string(e->value);
+                return true;
             }
-            return (len - 1);
+
         }
     };
 
@@ -524,7 +477,9 @@ void task_6(ofstream &fout, InstructionSequence* instr_seq) {
     } else if (q.length == 0) {
         answer = "empty";
     } else {
-        answer = q.print_list();
+        if(!(q.make_str(answer))){
+            answer="error";
+        }
     }
 
     ///////////      End of Implementation      /////////////
