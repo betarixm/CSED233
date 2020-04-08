@@ -32,7 +32,7 @@ def open_file(file_name):
 
     af = open(file_name, "a")
     if not is_header:
-        af.write("Task,Python Result,My Result\n")
+        af.write("Task\tPython Result\tMy Result\n")
     return af
 
 
@@ -57,7 +57,8 @@ def make_str(res_list):
 
 
 def get(exe, cmd_str):
-    subprocess.call("rm ./submit.txt", shell=True)
+    if os.path.exists("./submit.txt"):
+        os.remove("./submit.txt")
     subprocess.call(f"./{exe} {cmd_str}", shell=True)
     f = open("submit.txt")
     return f.read().split("\n")[1]
@@ -167,7 +168,7 @@ def simulate(task_num, size, res_file):
     test_case = t(task_num).make_cases(size)
     py_res = t(task_num).simulate(test_case)
     my_res = get(FILE_EXECUTABLE, test_case)
-    res_file.write(f"{test_case},{py_res},{my_res}\n")
+    res_file.write(f"{test_case}\t{py_res}\t{my_res}\n")
     is_success = (py_res in my_res) or (my_res in py_res)
 
     return is_success, test_case, py_res, my_res
