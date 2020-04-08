@@ -29,7 +29,7 @@ using namespace std;
         4: O( n^2 )
 */
 void task_1(ofstream &fout) {
-    int answer = 0;  // TODO: Change to your answer
+    int answer = 2;  // TODO: Change to your answer
 
     fout << "[Task 1]" << endl;
     fout << answer << endl;
@@ -66,7 +66,7 @@ void task_1(ofstream &fout) {
         4: O( n^2 )
 */
 void task_2(ofstream &fout) {
-    int answer = 0;  // TODO: Change to your answer
+    int answer = 4;  // TODO: Change to your answer
 
     fout << "[Task 2]" << endl;
     fout << answer << endl;
@@ -103,7 +103,7 @@ void task_3(ofstream &fout, InstructionSequence* instr_seq) {
     class List{
     private:
         int length;
-        element* list, *last;
+        element *list, *last;
     public:
         List(){
             length = 0;
@@ -122,8 +122,8 @@ void task_3(ofstream &fout, InstructionSequence* instr_seq) {
             element* target=list;
             element* tmp= new element;
             tmp->value= 0, tmp->next= nullptr;
-            if(idx >= length || idx < 0) return false;
-
+            if(idx > length || idx < 0) return false;
+            if(idx == length) last = tmp;
             if(idx){
                 while(--idx) target=target->next;
                 tmp->next = target->next;
@@ -137,7 +137,7 @@ void task_3(ofstream &fout, InstructionSequence* instr_seq) {
         }
 
         char* print_list(){
-            char* list_str = new char[length * 10];
+            char* list_str = new char[get_str_length()];
             int len_str = 0;
             element* e = list;
 
@@ -147,6 +147,21 @@ void task_3(ofstream &fout, InstructionSequence* instr_seq) {
             len_str += sprintf(list_str + len_str, "%d", e->value);
             list_str[len_str] = '\0';
             return list_str;
+        }
+
+        int get_str_length(){
+            int len = 0, target = 0;
+            element* e = list;
+
+            for(; e != nullptr; e=e->next){
+                target = e->value;
+                while(target) {
+                    target = int(target/10);
+                    len++;
+                }
+                len++;
+            }
+            return (len - 1);
         }
     };
 
@@ -216,26 +231,55 @@ void task_4(ofstream &fout, InstructionSequence* instr_seq) {
             top = nullptr;
         }
 
-        int push(int value){
+        void push(int value){
             element* tmp = new element;
             tmp->value=value, tmp->next=top;
             top = tmp;
         }
 
+        char* print_list(){
+            char* list_str = new char[get_str_length()];
+            int len_str = 0;
+            element* e = top;
+
+            for(; e->next != nullptr; e = e->next){
+                len_str += sprintf(list_str+len_str,"%d ", e->value);
+            }
+            len_str += sprintf(list_str + len_str, "%d", e->value);
+            list_str[len_str] = '\0';
+            return list_str;
+        }
+
+        int get_str_length(){
+            int len = 0, target = 0;
+            element* e = top;
+
+            for(; e != nullptr; e=e->next){
+                target = e->value;
+                while(target) {
+                    target = int(target/10);
+                    len++;
+                }
+                len++;
+            }
+            return (len - 1);
+        }
+
         
     };
+    Stack s= Stack();
     for (int i=0; i<instr_seq->length; i++) {
         string command = instr_seq->instructions[i].command;
         if (command.compare("push") == 0) {
             /* TODO: Implement */
-
-
-
+            s.push(instr_seq->instructions[i].value);
         } else {
             cerr << "Invalid command" << endl;
             exit(-1);
         }
     }
+    answer = s.print_list();
+
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
     
@@ -266,23 +310,90 @@ void task_5(ofstream &fout, InstructionSequence* instr_seq) {
 
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
+    typedef struct stu_element{
+        int value;
+        stu_element* next;
+    } element;
 
+    class Stack {
+    public:
+        element* top;
+        Stack() {
+            top = nullptr;
+        }
 
+        bool push(int value){
+            element* tmp = new element;
+            tmp->value=value, tmp->next=top;
+            top = tmp;
+            return true;
+        }
+
+        bool pop(){
+            if(top == nullptr)
+                return false;
+            element* tmp = top;
+            top = top->next;
+            delete tmp;
+            return true;
+        }
+
+        char* print_list(){
+            char* list_str = new char[get_str_length()];
+            int len_str = 0;
+            element* e = top;
+
+            for(; e->next != nullptr; e = e->next){
+                len_str += sprintf(list_str+len_str,"%d ", e->value);
+            }
+            len_str += sprintf(list_str + len_str, "%d", e->value);
+            list_str[len_str] = '\0';
+            return list_str;
+        }
+
+        int get_str_length(){
+            int len = 0, target = 0;
+            element* e = top;
+
+            for(; e != nullptr; e=e->next){
+                target = e->value;
+                while(target) {
+                    target = int(target/10);
+                    len++;
+                }
+                len++;
+            }
+            return (len - 1);
+        }
+
+    };
+
+    Stack s= Stack();
+    bool success = false;
     for (int i=0; i < instr_seq->length; i++) {
         string command = instr_seq->instructions[i].command;
         if (command.compare("push") == 0) {
             /* TODO: Implement */
-
-
+            success = s.push(instr_seq->instructions[i].value);
         } else if (command.compare("pop") == 0) {
             /* TODO: Implement */
-
-
+            success = s.pop();
+            if(!success) break;
         } else {
             cerr << "Invalid command" << endl;
             exit(-1);
         }
     }
+
+    if(!success){
+        answer = "error";
+    } else if (s.top == nullptr) {
+        answer = "empty";
+    } else {
+        answer = s.print_list();
+    }
+
+
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
     
@@ -315,22 +426,107 @@ void task_6(ofstream &fout, InstructionSequence* instr_seq) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
+    typedef struct stu_element{
+        int value;
+        stu_element* next;
+        stu_element* prev;
+
+    } element;
+
+    class Queue {
+    private:
+        element *head, *tail;
+    public:
+        int length;
+        Queue(){
+            length = 0;
+            head = nullptr, tail = nullptr;
+        }
+
+        bool enqueue(int value){
+            element* e = new element;
+            e->value = value, e->next = nullptr, e->prev = nullptr;
+
+            if(!length) {
+                tail=e;
+            } else {
+                head->prev = e;
+                e->next = head;
+            }
+
+            head = e;
+            length++;
+            return true;
+        }
+
+        bool dequeue(int value){
+            if(!length) return false;
+
+            element* e = tail;
+            tail = e->prev;
+            delete e;
+            if (tail != nullptr){
+                tail->next = nullptr;
+            }
+            length--;
+            return true;
+        }
+
+        char* print_list(){
+            char* queue_str = new char[get_str_length()];
+            int len_str = 0;
+            element* e = tail;
+
+            for(; e->prev != nullptr; e = e->prev){
+                len_str += sprintf(queue_str + len_str, "%d ", e->value);
+            }
+            len_str += sprintf(queue_str + len_str, "%d", e->value);
+            queue_str[len_str] = '\0';
+            return queue_str;
+        }
+
+        int get_str_length(){
+            int len = 0, target = 0;
+            element* e = head;
+
+            for(; e != nullptr; e=e->next){
+                target = e->value;
+                while(target) {
+                    target = int(target/10);
+                    len++;
+                }
+                len++;
+            }
+            return (len - 1);
+        }
+    };
+
+    Queue q = Queue();
+    bool success = false;
 
     for (int i=0; i < instr_seq->length; i++) {
         string command = instr_seq->instructions[i].command;
         if (command.compare("enqueue") == 0) {
             /* TODO: Implement */
-
-
+            success = q.enqueue(instr_seq->instructions[i].value);
         } else if (command.compare("dequeue") == 0) {
             /* TODO: Implement */
-
-
+            success = q.dequeue(instr_seq->instructions[i].value);
+            if(!success) break;
         } else {
             cerr << "Invalid command" << endl;
             exit(-1);
         }
     }
+
+    if(!success){
+        answer = "error";
+    } else if (q.length == 0) {
+        answer = "empty";
+    } else {
+        answer = q.print_list();
+    }
+
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
     
