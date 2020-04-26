@@ -2,7 +2,8 @@
 # POSTECH CSED233 ASSN2 AUTO CHECKER
 # Python 3.7+
 #
-# By beta@plus, gwon minjae.
+# by beta@plus, gwon minjae.
+# special thx to whysw@plus, yang seungwon.
 # github.com/beta-lux
 #
 
@@ -10,7 +11,7 @@ import random
 import subprocess
 import os
 
-SIZE_TREE_MAX = 10
+SIZE_TREE_MAX = 1
 NUM_TEST_MAX = 10000
 NUM_PRINT_PROCESS = 100
 FILE_EXECUTABLE = "pa2"
@@ -109,7 +110,7 @@ class Tree:
 
     def _height(self, node):
         if node is None:
-            return 0
+            return -1
         else:
             return ((self._height(node.left)) if (self._height(node.left) > self._height(node.right)) else (
                 self._height(node.right))) + 1
@@ -286,7 +287,7 @@ t = lambda x: tasks[x - 2]
 def simulate_tree(task_num, size, res_file):
     cmd = t(task_num).make_cmd(gen_rnd_tree_str(size))
     py_res = t(task_num).run(cmd)
-    my_res = get(FILE_EXECUTABLE, cmd)
+    my_res = get(FILE_EXECUTABLE, cmd).strip()
     res_file.write(f"{cmd}\t{py_res}\t{my_res}\n")
     is_success = py_res == my_res
 

@@ -146,7 +146,7 @@ void BinaryTree::_inOrder(Node *node, string &result) {
 
 int BinaryTree::_height(Node *node) {
     if(node == NULL){
-        return 0;
+        return -1;
     } else {
         return ((_height(node->left) > _height(node->right)) ? (_height(node->left)) : (_height(node->right))) + 1;
     }
