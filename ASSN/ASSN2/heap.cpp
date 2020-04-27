@@ -38,6 +38,8 @@ void MinHeap::insertKey(int k) {
 void MinHeap::deleteMin() {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
+    if(heap_size == 0)
+        return;
     heap_size--;
     swap(heap_arr[0], heap_arr[heap_size]);
     heap_arr[heap_size] = NULL;
@@ -54,11 +56,15 @@ void MinHeap::minHeapProp(int i) {
 
     int lc = leftChildIdx(i);
     int rc = rightChildIdx(i);
+    int minIdx = 0;
 
-    lc = (lc > heap_size)?(i):(lc);
-    rc = (rc > heap_size)?(i):(rc);
-
-    int minIdx = (heap_arr[lc]<heap_arr[rc])?(lc):(rc);
+    if (lc >= heap_size){
+        return;
+    } else if (rc >= heap_size){
+        minIdx = lc;
+    } else {
+        minIdx = (heap_arr[lc]<heap_arr[rc])?(lc):(rc);
+    }
 
     if (heap_arr[minIdx] < heap_arr[i]){
         swap(heap_arr[minIdx], heap_arr[i]);

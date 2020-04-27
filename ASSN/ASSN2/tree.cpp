@@ -155,7 +155,7 @@ int BinaryTree::_height(Node *node) {
 void BinaryTree::_isComplete(Node *node, bool& complete){
     int height = this->getHeight();
     bool isDone = false;
-    checkCompletePreOrder(node, complete, isDone, height, 1);
+    checkCompletePreOrder(node, complete, isDone, height, 0);
 }
 
 void BinaryTree::checkCompletePreOrder(Node *node, bool &complete, bool &isDone, int height, int depth) {

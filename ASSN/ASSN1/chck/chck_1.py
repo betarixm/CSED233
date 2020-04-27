@@ -169,7 +169,7 @@ def simulate(task_num, size, res_file):
     py_res = t(task_num).simulate(test_case)
     my_res = get(FILE_EXECUTABLE, test_case)
     res_file.write(f"{test_case}\t{py_res}\t{my_res}\n")
-    is_success = (py_res in my_res) or (my_res in py_res)
+    is_success = py_res == my_res
 
     return is_success, test_case, py_res, my_res
 
