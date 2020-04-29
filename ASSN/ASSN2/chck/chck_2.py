@@ -12,8 +12,8 @@ import random
 import subprocess
 import os
 
-SIZE_TREE_MAX = 20
-NUM_TEST_MAX = 10000
+SIZE_TREE_MAX = 15
+NUM_TEST_MAX = 100000
 NUM_PRINT_PROCESS = 100
 NUM_RANGE_TEST_HEAP = 50
 FILE_EXECUTABLE = "pa2"
@@ -400,9 +400,6 @@ def simulate(task_num, size, res_file):
     is_success = py_res == my_res
 
     return is_success, cmd, py_res, my_res
-
-ta = Task6()
-ta.run("""6 "[('delMin',NULL),('delMin',NULL),('insert',45),('insert',34),('insert',30),('insert',11)]""")
 
 num_fail = 0
 

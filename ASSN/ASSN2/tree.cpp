@@ -1,6 +1,7 @@
 #include "tree.h"
 #include <iostream>
 #include <string>
+#include <cstring>
 
 using namespace std;
 
