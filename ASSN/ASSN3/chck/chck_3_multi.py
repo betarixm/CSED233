@@ -11,12 +11,15 @@ erro = lambda x: print(f"[-] {x}")
 info = lambda x: print(f"[+] {x}")
 blan = lambda x: print(f"    {x}")
 
+
 def gen_block(isInsert:bool, num: int) -> str:
     s = "insert" if isInsert else "delete"
     return f"('{s}',{str(num)})"
 
+
 def gen_rnd_block(isInsert: bool) -> str:
     return gen_block(isInsert, random.randint(-9, 9))
+
 
 def gen_list(isInsert: bool, num: int) -> str:
     s = ""
@@ -24,6 +27,7 @@ def gen_list(isInsert: bool, num: int) -> str:
         s += f"{gen_rnd_block(isInsert)},"
 
     return s
+
 
 def gen_rnd_list(num: int) -> str:
     s = ""
@@ -33,23 +37,33 @@ def gen_rnd_list(num: int) -> str:
 
     return s
 
+
 def gen_sort(task_num: int):
     type_sort = ["bubbleSort", "insertionSort", "mergeSort"]
     s = f"[{gen_list(True, random.randint(1, MAX_LIST_LEN))}('{type_sort[task_num - 2]}',NULL)]"
     return s
+
 
 def gen_bst():
     s = f"[{gen_rnd_list(random.randint(1, MAX_LIST_LEN))[:-1]}]"
     return s
 
 
+def gen_bst_insert():
+    return f"[{gen_list(True, random.randint(1, MAX_LIST_LEN))[:-1]}]"
+
+
 def epoch():
-    task_num = random.choice([2,3,4,6])
+    task_num = random.choice([1, 2, 3, 4, 6])
     binary_list = ["./beka", "./wasm"]
     result_list = []
 
     if task_num == 6:
         task_str = gen_bst()
+    elif task_num == 5:
+        task_str = gen_bst_insert()
+    elif task_num == 1:
+        task_str = ""
     else:
         task_str = gen_sort(task_num)
 
@@ -89,6 +103,7 @@ def log(task_num, task_str, binary_list, result_list):
     with open(LOG_FILENAME, 'a') as f:
         f.write(row[:-1] + "\n")
 
+
 def make_log_header(binary_list):
     is_header_exist = False
 
@@ -96,7 +111,6 @@ def make_log_header(binary_list):
         with open(LOG_FILENAME, 'r') as f:
             if "task" in f.readline():
                 is_header_exist = True
-
 
     if not is_header_exist:
         with open(LOG_FILENAME, 'w') as f:
