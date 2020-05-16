@@ -8,3 +8,7 @@ add_executable(EVAL1 ASSN/ASSN1/evaluate.cpp)
 
 add_executable(TEST test.cpp)
 add_executable(ASSN2 ASSN/ASSN2/pa2.cpp ASSN/ASSN2/utils.cpp ASSN/ASSN2/tree.cpp ASSN/ASSN2/heap.cpp)
+add_executable(EVAL2 ASSN/ASSN2/chck/evaluate.cpp)
+
+FILE(GLOB ASSN3_CPP ASSN/ASSN3/*.cpp)
+add_executable(ASSN3 ${ASSN3_CPP})
