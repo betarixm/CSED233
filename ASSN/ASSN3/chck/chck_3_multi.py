@@ -58,10 +58,8 @@ def epoch():
 
     if len(list(set(result_list))) != 1:
         erro("Different!")
+        print(task_num, task_str)
         for i in range(len(binary_list)):
-            info(binary_list[i])
-            print(result_list[i])
-            print()
             info(binary_list[i])
             print(result_list[i])
             print()
