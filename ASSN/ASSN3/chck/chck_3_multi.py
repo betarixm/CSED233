@@ -45,7 +45,7 @@ def gen_bst():
 
 def epoch():
     task_num = random.choice([2,3,4,6])
-    binary_list = ["./pa3", "./pa3"]
+    binary_list = ["./beka", "./wasm"]
     result_list = []
 
     if task_num == 6:

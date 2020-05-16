@@ -21,6 +21,7 @@ private:
     }
 
     Node** _getNodeByKey(Node** _node, int key){
+        if((*_node) == nullptr) return nullptr;
         if((*_node)->key == key) return _node;
 
         Node** tmp_1 = nullptr;
