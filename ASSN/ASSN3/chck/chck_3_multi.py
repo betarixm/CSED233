@@ -1,7 +1,9 @@
 import random
 import subprocess
 import os
+import glob
 
+BINARY_FOLDER = "src"
 MAX_LIST_LEN: int = 20
 MAX_EPOCH: int = 1000
 RESULT_FILENAME = "submit.txt"
@@ -55,7 +57,7 @@ def gen_bst_insert():
 
 def epoch():
     task_num = random.choice([1, 2, 3, 4, 6])
-    binary_list = ["./beka", "./wasm"]
+    binary_list = glob.glob(f"./{BINARY_FOLDER}/*")
     result_list = []
 
     if task_num == 6:
@@ -118,6 +120,13 @@ def make_log_header(binary_list):
             for b in binary_list:
                 header += f"{b}\t"
             f.write(header[:-1] + "\n")
+
+
+def get_binary_list():
+    l = []
+    for filename in glob.glob(f"./{BINARY_FOLDER}/*"):
+        l.append(f"./{BINARY_FOLDER}/{filename}")
+    return l
 
 
 for i in range(MAX_EPOCH):
