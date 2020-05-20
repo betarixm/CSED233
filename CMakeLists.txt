@@ -12,3 +12,7 @@ add_executable(EVAL2 ASSN/ASSN2/chck/evaluate.cpp)
 
 FILE(GLOB ASSN3_CPP ASSN/ASSN3/*.cpp)
 add_executable(ASSN3 ${ASSN3_CPP})
+
+FILE(GLOB ASSN4_H ASSN/ASSN4/*.h)
+FILE(GLOB ASSN4_CPP ASSN/ASSN4/*.cpp)
+add_executable(ASSN4 ${ASSN4_CPP} ${ASSN4_H})

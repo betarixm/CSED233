@@ -3,17 +3,20 @@ import subprocess
 import os
 import glob
 
+# DEFINE
 BINARY_FOLDER = "src"
 MAX_LIST_LEN: int = 20
 MAX_EPOCH: int = 1000
 RESULT_FILENAME = "submit.txt"
 LOG_FILENAME = "result.tsv"
 
+# Just for print.
 erro = lambda x: print(f"[-] {x}")
 info = lambda x: print(f"[+] {x}")
 blan = lambda x: print(f"    {x}")
 
 
+# Methods to Make task-string.
 def gen_block(isInsert:bool, num: int) -> str:
     s = "insert" if isInsert else "delete"
     return f"('{s}',{str(num)})"
@@ -54,10 +57,10 @@ def gen_bst():
 def gen_bst_insert():
     return f"[{gen_list(True, random.randint(1, MAX_LIST_LEN))[:-1]}]"
 
-
+# Set task-string
 def epoch():
-    task_num = random.choice([1, 2, 3, 4, 6])
-    binary_list = glob.glob(f"./{BINARY_FOLDER}/*")
+    task_num = random.choice([1, 2, 3, 4, 6])  # Number to Check.
+    binary_list = glob.glob(f"./{BINARY_FOLDER}/*")  
     result_list = []
 
     if task_num == 6:
