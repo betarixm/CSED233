@@ -126,7 +126,7 @@ private:
 
         s2->left = s1;
         node->left = s2;
-        s2->right = nullptr;
+        s1->right = nullptr;
 
         return rotate_LL(node);
     }
