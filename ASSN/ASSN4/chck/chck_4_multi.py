@@ -6,6 +6,7 @@ import glob
 # DEFINE
 BINARY_FOLDER = "src"
 MAX_LIST_LEN: int = 20
+MAX_HASH_N: int = 20
 MAX_EPOCH: int = 1000
 RESULT_FILENAME = "submit.txt"
 LOG_FILENAME = "result.tsv"
@@ -63,7 +64,7 @@ def gen_r(n: int) -> int:
 
 
 def gen_hash_function_str():
-    n = random.randint()
+    n = random.randint(1, MAX_HASH_N)
     r = gen_r(n)
     key = gen_key(n)
 
@@ -77,7 +78,7 @@ def gen_rnd_table_block_str(key: int):
 
 
 def gen_hash_table_str():
-    n = random.randint()
+    n = random.randint(1, MAX_HASH_N)
     r = gen_r(n)
     size = random.randint(1, MAX_LIST_LEN)
 
