@@ -30,8 +30,28 @@ private:
         }
 
         setHeight(_root);
-        balance(target, key);
+        _balance(target);
         return res;
+    }
+
+
+    Node** getNodeByKey(int key) {
+        return _getNodeByKey(&_root, key);
+    }
+
+    Node **_getNodeByKey(Node **_node, int key) {
+        if((*_node) == nullptr) return nullptr;
+        if((*_node)->key == key) return _node;
+
+        Node** tmp_1 = nullptr;
+        Node** tmp_2 = nullptr;
+        if((*_node)->left != NULL) tmp_1 = _getNodeByKey(&((*_node)->left), key);
+        if((*_node)->right != NULL) tmp_2 = _getNodeByKey(&((*_node)->right), key);
+
+        if(tmp_1 != nullptr) return tmp_1;
+        if(tmp_2 != nullptr) return tmp_2;
+
+        return nullptr;
     }
 
     int setHeight(Node* target){
@@ -111,19 +131,30 @@ private:
         return rotate_LL(node);
     }
 
-    Node* balance(Node* target, int new_data){
-        int bf = getBf(target);
+    void balance(Node* target){
+        if(target == NULL) { return; }
 
+        balance(target -> left);
+        balance(target -> right);
+
+        _balance(target);
+    }
+
+    Node *_balance(Node *target) {
+        int bf = getBf(target);
+        int sub_bf;
         if(bf > 1){
-            if(new_data < target -> left ->key){
-                rotate_LL(target);
-            } else if(new_data > target -> left ->key){
+            sub_bf = getBf(target->left);
+            if(sub_bf < 0){
                 rotate_LR(target);
+            } else {
+                rotate_LL(target);
             }
         } else if (bf < -1) {
-            if(new_data < target -> right -> key){
+            sub_bf = getBf(target->right);
+            if(sub_bf > 0){
                 rotate_RL(target);
-            } else if (new_data > target -> right -> key){
+            } else {
                 rotate_RR(target);
             }
         }

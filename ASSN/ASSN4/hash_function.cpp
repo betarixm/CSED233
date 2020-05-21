@@ -9,7 +9,10 @@ using namespace std;
 int HashFunction::hashing(int key) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
-    return -1;
+    unsigned int target = pow(key, 2);
+    unsigned int mask = genBitMask();
+    unsigned int shift = key_size - index_size / 2;
+    return (int)((target & mask) >> shift);
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
