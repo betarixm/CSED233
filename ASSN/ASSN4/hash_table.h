@@ -34,7 +34,7 @@ private:
 
     bool isDuplicated(int key){
         for(int i = 0; i < table_size; i++){
-            if(key == table[i]){
+            if(states[i] == OCCUPIED && key == table[i]){
                 return true;
             }
         }

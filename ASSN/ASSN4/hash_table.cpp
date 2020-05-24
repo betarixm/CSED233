@@ -72,7 +72,7 @@ void HashTable::erase(int key) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
     for(int i = 0; i < table_size; i++){
-        if(table[i] == key){
+        if(states[i] == OCCUPIED && table[i] == key){
             states[i] = DELETED;
             break;
         }
