@@ -112,7 +112,10 @@ private:
         Node* s1 = node->right;
         Node* s2 = s1->left;
 
-        s2->right = s1;
+        Node* tmp = s2;
+        while(tmp->right != NULL) { tmp = tmp->right; }
+
+        tmp->right = s1;
         node->right = s2;
         s1->left = nullptr;
 
@@ -124,7 +127,10 @@ private:
         Node* s1 = node->left;
         Node* s2 = s1->right;
 
-        s2->left = s1;
+        Node* tmp = s2;
+        while(tmp->left != NULL) { tmp = tmp->left; }
+
+        tmp->left = s1;
         node->left = s2;
         s1->right = nullptr;
 
