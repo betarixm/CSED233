@@ -15,7 +15,9 @@ HashTable::HashTable(int table_size, HashFunction *hf) : table_size(table_size) 
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
     
-    /*  Write your codes if you need  */
+    for(int i = 0; i < table_size; i++){
+        states[i] = EMPTY;
+    }
     
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
