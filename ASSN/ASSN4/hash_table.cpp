@@ -56,13 +56,15 @@ void HashTable::insert(int key) {
     //////////  TODO: Implement From Here      //////////////
     if(isDuplicated(key)) return;
     int idx = hf->hashing(key);
-    while(idx < table_size){
+    int count = 0;
+    while(count != table_size){
+        idx = idx % table_size;
         if(states[idx] != OCCUPIED){
             table[idx] = key;
             states[idx] = OCCUPIED;
             break;
         }
-        idx++;
+        idx++, count++;
     }
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
