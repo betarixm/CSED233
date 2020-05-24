@@ -32,6 +32,14 @@ private:
     /////////////////////////////////////////////////////////
     //////  TODO: Add private members if required ///////////
 
+    bool isDuplicated(int key){
+        for(int i = 0; i < table_size; i++){
+            if(key == table[i]){
+                return true;
+            }
+        }
+        return false;
+    }
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 };

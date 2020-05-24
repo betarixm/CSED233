@@ -54,6 +54,7 @@ void HashTable::print_table(ostream &out) {
 void HashTable::insert(int key) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
+    if(isDuplicated(key)) return;
     int idx = hf->hashing(key);
     while(idx < table_size){
         if(states[idx] != OCCUPIED){
