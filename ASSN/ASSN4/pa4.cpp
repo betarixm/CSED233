@@ -36,7 +36,7 @@ using namespace std;
 
 void task_1(ofstream &fout) {
     fout << "[Task 1]" << endl;
-    string answer = "T T T F F F";  // TODO: Change to your answer
+    string answer = "F F T T T F";  // TODO: Change to your answer
     fout << answer << endl;
 }
 
@@ -73,7 +73,7 @@ void task_1(ofstream &fout) {
 
 void task_2(ofstream &fout) {
     fout << "[Task 2]" << endl;
-    string answer = "1 4 3";  // TODO: Change to your answer
+    string answer = "4 2 3";  // TODO: Change to your answer
     fout << answer << endl;
 }
 

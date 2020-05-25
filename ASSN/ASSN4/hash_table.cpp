@@ -54,17 +54,16 @@ void HashTable::print_table(ostream &out) {
 void HashTable::insert(int key) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
-    if(isDuplicated(key)) return;
+    // if(isDuplicated(key)) return;
     int idx = hf->hashing(key);
-    int count = 0;
-    while(count != table_size){
+    for(int count = 0; count < table_size; count++){
         idx = idx % table_size;
         if(states[idx] != OCCUPIED){
             table[idx] = key;
             states[idx] = OCCUPIED;
             break;
         }
-        idx++, count++;
+        idx++;
     }
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
@@ -73,11 +72,14 @@ void HashTable::insert(int key) {
 void HashTable::erase(int key) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
-    for(int i = 0; i < table_size; i++){
-        if(states[i] == OCCUPIED && table[i] == key){
-            states[i] = DELETED;
+    int idx = hf->hashing(key);
+    for(int count = 0; count < table_size; count++){
+        idx = idx % table_size;
+        if(states[idx] == OCCUPIED && table[idx] == key){
+            states[idx] = DELETED;
             break;
         }
+        idx++;
     }
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
