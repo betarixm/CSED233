@@ -71,7 +71,7 @@ private:
         return left - right;
     }
 
-    Node* rotate_LL(Node* node){
+    Node* rotate_right(Node* node){
 
         Node* tmp_right = new Node(node->key);
         tmp_right->right = node->right;
@@ -89,7 +89,7 @@ private:
         return node;
     }
 
-    Node* rotate_RR(Node* node){
+    Node* rotate_left(Node* node){
 
         Node* tmp_left = new Node(node->key);
         tmp_left->left = node->left;
@@ -107,34 +107,15 @@ private:
         return node;
     }
 
-    Node* rotate_RL(Node* node){
-
-        Node* s1 = node->right;
-        Node* s2 = s1->left;
-
-        Node* tmp = s2;
-        while(tmp->right != NULL) { tmp = tmp->right; }
-
-        tmp->right = s1;
-        node->right = s2;
-        s1->left = nullptr;
-
-        return rotate_RR(node);
+    Node* rotate_right_left(Node* node){
+        node->right= rotate_right(node->right);
+        return rotate_left(node);
 
     }
 
-    Node* rotate_LR(Node* node){
-        Node* s1 = node->left;
-        Node* s2 = s1->right;
-
-        Node* tmp = s2;
-        while(tmp->left != NULL) { tmp = tmp->left; }
-
-        tmp->left = s1;
-        node->left = s2;
-        s1->right = nullptr;
-
-        return rotate_LL(node);
+    Node* rotate_left_right(Node* node){
+        node->left= rotate_left(node->left);
+        return rotate_right(node);
     }
 
     void balance(Node* target){
@@ -152,16 +133,16 @@ private:
         if(bf > 1){
             sub_bf = getBf(target->left);
             if(sub_bf < 0){
-                rotate_LR(target);
+                rotate_left_right(target);
             } else {
-                rotate_LL(target);
+                rotate_right(target);
             }
         } else if (bf < -1) {
             sub_bf = getBf(target->right);
             if(sub_bf > 0){
-                rotate_RL(target);
+                rotate_right_left(target);
             } else {
-                rotate_RR(target);
+                rotate_left(target);
             }
         }
 
