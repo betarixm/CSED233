@@ -73,7 +73,7 @@ void task_1(ofstream &fout) {
 
 void task_2(ofstream &fout) {
     fout << "[Task 2]" << endl;
-    string answer = "4 2 3";  // TODO: Change to your answer
+    string answer = "4 2 1";  // TODO: Change to your answer
     fout << answer << endl;
 }
 
