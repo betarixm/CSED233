@@ -52,7 +52,7 @@ int AVLTree::erase(int key) {
     }
 
     setHeight(_root);
-    balance(_root);
+    balance(_root, key);
 
     return 0;
 

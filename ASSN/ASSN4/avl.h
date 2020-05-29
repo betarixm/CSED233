@@ -28,9 +28,12 @@ private:
         } else if (key > target->key) {
             res = _insert(target->right, key);
         }
+        if(res != 1){
+            setHeight(_root);
+            _balance(target);
+            setHeight(_root);
+        }
 
-        setHeight(_root);
-        _balance(target);
         return res;
     }
 
@@ -40,33 +43,33 @@ private:
     }
 
     Node **_getNodeByKey(Node **_node, int key) {
-        if((*_node) == nullptr) return nullptr;
+        if((*_node) == NULL) return NULL;
         if((*_node)->key == key) return _node;
 
-        Node** tmp_1 = nullptr;
-        Node** tmp_2 = nullptr;
+        Node** tmp_1 = NULL;
+        Node** tmp_2 = NULL;
         if((*_node)->left != NULL) tmp_1 = _getNodeByKey(&((*_node)->left), key);
         if((*_node)->right != NULL) tmp_2 = _getNodeByKey(&((*_node)->right), key);
 
-        if(tmp_1 != nullptr) return tmp_1;
-        if(tmp_2 != nullptr) return tmp_2;
+        if(tmp_1 != NULL) return tmp_1;
+        if(tmp_2 != NULL) return tmp_2;
 
-        return nullptr;
+        return NULL;
     }
 
     int setHeight(Node* target){
-        if(target == nullptr){ return -1; }
-        int left = (target->left != nullptr) ? (setHeight(target->left)) : (0);
-        int right = (target->right != nullptr) ? (setHeight(target->right)) : (0);
-        int _height = max(left, right) + 1;
+        if(target == NULL){ return -1; }
+        int left = (target->left != NULL) ? (setHeight(target->left)) : (0);
+        int right = (target->right != NULL) ? (setHeight(target->right)) : (0);
+        int _height = (target-> left == NULL && target->right == NULL) ? (0) : (max(left, right) + 1);
         target->height = _height;
         return _height;
     }
 
     int getBf(Node* node){
-        if(_root == nullptr) return -1;
-        int left = node->left != nullptr ? node->left->height : 0;
-        int right = node->right != nullptr ? node->right->height : 0;
+        if(_root == NULL) return -1;
+        int left = node->left != NULL ? node->left->height : -1;
+        int right = node->right != NULL ? node->right->height : -1;
 
         return left - right;
     }
@@ -118,13 +121,18 @@ private:
         return rotate_right(node);
     }
 
-    void balance(Node* target){
-        if(target == NULL) { return; }
+    void balance(Node* target, int new_data){
+        if(target == NULL){
+            return;
+        } else if (new_data < target->key){
+            balance(target->left, new_data);
+        } else if (new_data > target->key) {
+            balance(target->right, new_data);
+        }
 
-        balance(target -> left);
-        balance(target -> right);
-
+        setHeight(_root);
         _balance(target);
+        setHeight(_root);
     }
 
     Node *_balance(Node *target) {
