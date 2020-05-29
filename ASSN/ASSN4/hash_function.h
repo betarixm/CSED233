@@ -16,21 +16,9 @@ private:
 
     /////////////////////////////////////////////////////////
     //////  TODO: Add private members if required ///////////
-    unsigned int genBitMask(){
-        unsigned int result = 0b0;
-        int start = key_size - index_size / 2;
-        int end = key_size + index_size / 2;
-        for(int i = start; i < end; i++){
-            result += pow(2, i);
-        }
-        return result;
-    }
+    unsigned int genBitMask();
 
-    int pow(int x, int r){
-        int result = x;
-        while(--r) { result *= x; }
-        return result;
-    }
+    int pow(int x, int r);
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 };
