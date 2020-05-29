@@ -14,11 +14,9 @@ using namespace std;
 void AVLTree::balance(Node *target, int new_data) {
     if(target == NULL){
         return;
-    } else if (new_data < target->key){
-        balance(target->left, new_data);
-    } else if (new_data > target->key) {
-        balance(target->right, new_data);
     }
+    balance(target->left, new_data);
+    balance(target->right, new_data);
 
     setHeight(_root);
     _balance(target);
