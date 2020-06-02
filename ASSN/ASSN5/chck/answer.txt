@@ -1,0 +1,19 @@
+[Task 1]
+1 1 1 1
+[Task 2]
+C D E
+[Task 3]
+0
+[Task 4]
+hit
+0: []
+1: []
+2: ['apple' 'car']
+3: ['book']
+[Task 5]
+Bloom: hit, HashTable: hit
+0110011000010000
+0: []
+1: []
+2: ['apple' 'car']
+3: ['book']

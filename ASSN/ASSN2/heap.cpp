@@ -7,7 +7,7 @@ using namespace std;
 
 MinHeap::MinHeap() {
     heap_size = 0;
-    heap_arr = new int[100]; // Default array of size 100
+    heap_arr = new int[100]; // Default array of l_size 100
 }
 
 string MinHeap::printHeap(){

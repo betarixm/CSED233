@@ -180,15 +180,15 @@ void task_4(ofstream &fout, InstructionSequence &instr_seq) {
     Description:
         Implement a mid-square hash function
         This hash function is used with n-bit integer keys \
-          and hashing into a table of size 2^r, when r is even
+          and hashing into a table of l_size 2^r, when r is even
         You can modify hash_function.cpp and hash_function.h files
 
         TODO: Implementation HashFunction::hashing function
 
 
     Input: Three commands (The order is always 'n', 'r', and 'key')
-      - ('n', integer): The size of a key
-      - ('r', integer): The size of an index
+      - ('n', integer): The l_size of a key
+      - ('r', integer): The l_size of an index
       - ('key', integer): A key to be hashed (in decimal)
 
     Output
@@ -231,7 +231,7 @@ void task_5(ofstream &fout, InstructionSequence &instr_seq) {
     Description:
         Implement a closed hash table with rehashing implementation.
         This hash table is used with n-bit integer keys \
-          and hashing into a table of size 2^r, when r is even
+          and hashing into a table of l_size 2^r, when r is even
         This hash table uses linear probing as a collision handling method.
         The index of the key k after i-th collision, h_i(k), is:
             h_i(k) = h(k) + i
@@ -242,9 +242,9 @@ void task_5(ofstream &fout, InstructionSequence &instr_seq) {
 
 
     Input: A sequence of commands
-      - ('n', integer): The size of a key
+      - ('n', integer): The l_size of a key
                         (The first command is always 'n')
-      - ('r', integer): The size of an index
+      - ('r', integer): The l_size of an index
                         (The second command is always 'r')
       - ('insert', integer): Insert integer into the hash table
       - ('delete', integer): Delete integer from the hash table
