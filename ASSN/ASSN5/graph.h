@@ -77,6 +77,16 @@ private:
 
         ListNode* begin() const { return l_begin; }
         ListNode* end() const { return l_end; }
+
+        bool isExist(T& target){
+            for(ListNode* i = l_begin; i != nullptr; i = i->next){
+                if (i->data == target){
+                    return true;
+                }
+            }
+            return false;
+        }
+
         int size() const { return l_size; }
     };
 
@@ -84,15 +94,23 @@ private:
     class Node{
     private:
         string _label;
-        List<Node*> _list;
+        List<Node*> _undirectedList;
+        List<Node*> _directedList;
     public:
         explicit Node(const string& l) { _label = l; };
         string label() const { return _label; }
-        Node& link(Node* target){
-            _list.append(target);
+
+        Node& undirectLink(Node* target){
+            _undirectedList.append(target);
             return *this;
         }
-        List<Node*> list() const { return _list; }
+
+        Node& directLink(Node* target){
+            _directedList.append(target);
+            return *this;
+        }
+        List<Node*> undirectedList() const { return _undirectedList; }
+        List<Node*> directedList() const { return _directedList; }
     };
 
     struct Check{
@@ -132,41 +150,46 @@ private:
         }
         return false;
     }
-    int _connected(Node* target, Check isVisited[], List<Node*>& result) {
-        int maxLength = 0;
-        Node* maxNode = nullptr;
-        Check* current;
+
+    int _connected(Node* target, Check visit[], List<Node*>& result) {
+        int len = 0;
 
         for(auto i = 0; i < size; i++){
-            if(isVisited[i].data == target){
-                current = &(isVisited[i]);
+            if(visit[i].data == target){
+                visit[i].isVisited=true; break;
             }
         }
 
+        result.append(target);
+        for(auto i = target->undirectedList().begin(); i != nullptr; i = i->next){
+            if(checkVisited(i->data, visit)) { continue; }
+            len = 1 + _connected(i->data, visit, result);
+        }
+
+        return len;
+    }
+
+
+    int _numCycle(Node* start, Node* target, Check visit[], List<Node*>& isChecked, int depth){
+        Check* current;
+        int result = 0;
+        for(auto i = 0; i < size; i++){
+            if(visit[i].data == target){
+                current = &(visit[i]); break;
+            }
+        }
+
+        if(depth > 0 && start == target){
+            isChecked.append(start);
+            return 1;
+        }
+        if(current->isVisited) { return 0; }
         current->isVisited = true;
-
-        for(auto i = target->list().begin(); i != nullptr; i = i->next){
-            if(checkVisited(i->data, isVisited)) { continue; }
-            int tmp = _connected(i->data, isVisited, result);
-            if(tmp > maxLength){
-                maxLength = tmp;
-                maxNode = i->data;
-            }
+        for(auto i = target->directedList().begin(); i != nullptr; i = i->next){
+            result += _numCycle(start, i->data, visit, isChecked, depth + 1);
         }
 
-        if(maxNode != nullptr){
-            result.append(maxNode);
-            for(int i = 0; i < size; i++){
-                if(isVisited[i].data == maxNode){
-                    isVisited[i].isVisited = true;
-                    break;
-                }
-            }
-        }
-
-        current->isVisited = false;
-
-        return maxLength + 1;
+        return result;
     }
 
     string makeLexiStr(List<Node*>& target){
