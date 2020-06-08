@@ -111,11 +111,12 @@ def gen_hash_block(isInsert: bool, target: str):
     return f"('{'insert' if isInsert else 'search'}', '{target}')"
 
 
-def gen_hash_str():
+def gen_hash_str(is_b_needed: bool):
     M = random.randint(1, MAX_HASH_M)
     b = random.randint(1, MAX_HASH_B)
     word_list = []
-    res = f"('M', {M}), ('b', {b}),"
+    res = f"('M', {M})," + (f"('b', {b})," if is_b_needed else "")
+
     for _ in range(random.randint(1, MAX_HASH_LEN)):
         is_insert = random.choice([True, True, False])
         if is_insert:
@@ -140,8 +141,9 @@ def epoch():
         task_str = gen_undirected_str()
     elif task_num == 3:
         task_str = gen_directed_str()
-    elif task_num == 4 or task_str == 5:
-        task_str = gen_hash_str()
+    elif task_num == 4 or task_num == 5:
+        task_str = gen_hash_str(task_num == 5)
+
     for b in binary_list:
         result_list.append(get_result(b, task_num, task_str))
 
@@ -161,7 +163,6 @@ def get_result(binary, task_num, task_str):
         os.remove(RESULT_FILENAME)
     cmd = [binary, str(task_num), task_str]
     subprocess.run(cmd, stdout=subprocess.DEVNULL)
-
     with open(RESULT_FILENAME, "r") as f:
         s = f.read()
     return s
