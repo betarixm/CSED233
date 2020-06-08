@@ -181,7 +181,7 @@ private:
 
         if(depth > 0 && start == target){
             initVisitArray(visit);
-            return (depth > 2);
+            return 1;
         }
         if(current->isVisited) { return 0; }
 
