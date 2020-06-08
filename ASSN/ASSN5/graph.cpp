@@ -18,21 +18,24 @@ int Graph::addEdge(string nodeA, string nodeB) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
+    int result = 0;
     Node* targetA = getNodeByLabel(nodeA);
     Node* targetB = getNodeByLabel(nodeB);
 
     if(targetA == nullptr){
         targetA = genNode(nodeA);
+        result = 1;
     }
 
     if(targetB == nullptr){
         targetB = genNode(nodeB);
+        result = 1;
     }
 
     targetA->undirectLink(targetB);
     targetB->undirectLink(targetA);
     targetA->directLink(targetB);
-    return 0;
+    return result;
 
     ///////////      End of Implementation      /////////////
     ///////////////////////////////////////////////////////
@@ -47,7 +50,7 @@ string Graph::getConnectedComponent() {
     int maxLen = 0;
 
     for(auto i = nodeList.begin(); i != nullptr; i = i->next){
-        Graph::List<Node*> tmp;
+        List<Node*> tmp;
         string tmpStr;
         initVisitArray(visit);
         int length = _connected(i->data, visit, tmp);
@@ -79,11 +82,14 @@ int Graph::getCycleCount() {
         if(isChecked.isExist(i->data)){
             continue;
         } else {
+            cout << i->data->label() <<endl;
             initVisitArray(visit);
             result += _numCycle(i->data, i->data, visit,isChecked, 0);
+            cout << endl;
         }
 
     }
+
 
     return result;
 

@@ -16,7 +16,8 @@ HashTable::HashTable(int table_size,
     //////////    TODO: Implement From Here    //////////////
 
     /*             Write your codes if you need            */
-
+    this->hf = hf;
+    table = new List<string>[table_size];
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
@@ -31,7 +32,8 @@ HashTable::HashTable(int table_size,
     //////////    TODO: Implement From Here    //////////////
 
     /*             Write your codes if you need            */
-
+    this->hf = hf;
+    table = new List<string>[table_size];
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
@@ -39,7 +41,7 @@ HashTable::HashTable(int table_size,
 HashTable::~HashTable() {
     /////////////////////////////////////////////////////////
     //////////    TODO: Implement From Here    //////////////
-
+    delete[] table;
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
@@ -48,7 +50,7 @@ string HashTable::lookup_bloom_filter(string value) {
     int key;
     /////////////////////////////////////////////////////////
     //////////    TODO: Implement From Here    //////////////
-
+    key = sumStr(value);
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
     return this->bloom_filter->search(key);
@@ -59,7 +61,10 @@ void HashTable::print_table(ostream &out) {
         out << i << ": [";
         /////////////////////////////////////////////////////
         /////////   TODO: Implement From Here     ///////////
-
+        for(auto node = table[i].begin(); node != nullptr; node = node->next){
+            out << "'" << node->data << "'";
+            if(node != table[i].end()) { out << " "; }
+        }
         /////////      End of Implementation      ///////////
         /////////////////////////////////////////////////////
         out << "]" << endl;
@@ -70,7 +75,8 @@ void HashTable::insert(string value) {
     int key;
     /////////////////////////////////////////////////////////
     ///////////   TODO: Implement From Here     /////////////
-
+    key = sumStr(value);
+    table[hf->hashing(value)].append(value);
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
     if (this->bloom_filter != nullptr)
@@ -81,8 +87,11 @@ string HashTable::search(string value) {
     /////////////////////////////////////////////////////////
     ///////////    TODO: Implement From Here    /////////////
 
-    return "miss";
-
+    if(table[hf->hashing(value)].isExist(value)){
+        return "hit";
+    } else {
+        return "miss";
+    }
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }

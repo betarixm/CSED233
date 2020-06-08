@@ -15,7 +15,12 @@ BloomFilter::BloomFilter(int key_size,
     //////////    TODO: Implement From Here    //////////////
 
     this->bit_vector = new bool[this->vector_size];  // Do not modify this line
+    for(int i = 0; i < vector_size; i++){
+        bit_vector[i] = false;
+    }
 
+    hf1 = new DivisionHashFunction(vector_size);
+    hf2 = new MidSquareHashFunction(key_size, vector_size);
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
@@ -23,7 +28,8 @@ BloomFilter::BloomFilter(int key_size,
 BloomFilter::~BloomFilter() {
     /////////////////////////////////////////////////////////
     //////////    TODO: Implement From Here    //////////////
-
+    delete hf1;
+    delete hf2;
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
     delete[] this->bit_vector;
@@ -40,7 +46,8 @@ void BloomFilter::print_vector(ostream &out) {
 void BloomFilter::insert(int key) {
     /////////////////////////////////////////////////////////
     ///////////   TODO: Implement From Here     /////////////
-
+    bit_vector[hf1->hashing(key)] = true;
+    bit_vector[hf2->hashing(key)] = true;
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
@@ -49,7 +56,15 @@ string BloomFilter::search(int key) {
     /////////////////////////////////////////////////////////
     ///////////    TODO: Implement From Here    /////////////
 
-    return "miss";
+    int hash1 = hf1->hashing(key);
+    int hash2 = hf2->hashing(key);
+
+    if(bit_vector[hash1] && bit_vector[hash2]){
+        return "hit";
+    } else {
+        return "miss";
+    }
+
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////

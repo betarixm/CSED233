@@ -31,7 +31,9 @@ int StringFoldingHashFunction::hashing(string value) {
     /////////////////////////////////////////////////////////
     //////////    TODO: Implement From Here    //////////////
 
-    return 0;
+    int result = 0;
+    for(char i: value){ result += i; }
+    return result % table_size;
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
@@ -41,6 +43,7 @@ int StringFoldingHashFunction::hashing(string value) {
 //////////  TODO: Implement From Here      //////////////
 
 /*   Write your codes if you have additional classes   */
+
 
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////

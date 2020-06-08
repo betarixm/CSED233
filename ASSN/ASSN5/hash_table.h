@@ -3,7 +3,7 @@
 #include <string>
 #include "hash_function.h"
 #include "bloom_filter.h"
-
+#include "graph.h"
 using namespace std;
 
 
@@ -26,6 +26,13 @@ private:
     BloomFilter *bloom_filter;
     /////////////////////////////////////////////////////////
     //////  TODO: Add private members if required ///////////
+    List<string>* table;
+
+    int sumStr(string& value){
+        int result = 0;
+        for(char i: value){ result += i; }
+        return result;
+    }
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
