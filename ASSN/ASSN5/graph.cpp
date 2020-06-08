@@ -51,7 +51,7 @@ int Graph::_connected(Graph::Node *target, Graph::Check *visit, List<Node *> &re
     result.append(target);
     for(auto i = target->undirectedList().begin(); i != nullptr; i = i->next){
         if(checkVisited(i->data, visit)) { continue; }
-        len = 1 + _connected(i->data, visit, result);
+        len += 1 + _connected(i->data, visit, result);
     }
 
     return len;
@@ -115,13 +115,11 @@ int Graph::addEdge(string nodeA, string nodeB) {
 
     if(targetA == nullptr){
         targetA = genNode(nodeA);
-        size++;
         result = 1;
     }
 
     if(targetB == nullptr){
         targetB = genNode(nodeB);
-        size++;
         result = 1;
     }
 

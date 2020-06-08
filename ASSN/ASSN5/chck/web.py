@@ -19,24 +19,13 @@ def cmd_to_site(target: str):
 
     return target
 
+
 def gen(target: str):
     target = target.replace("\n", '","')
     return target
 
 
-aa = """A B
-B A
-B C
-C B
-C D
-D C
-D A
-A D
-B F
-F B
-F G
-G F
-G C
-C G"""
+aa = """[('B', 'H'),('A', 'F'),('B', 'G'),('B', 'C'),('A', 'E')]"""
 
-print(site_to_cmd(aa))
+tmp = cmd_to_site(aa) if aa[0] == "[" else site_to_cmd(aa)
+print(tmp)
