@@ -66,20 +66,16 @@ int Graph::_numCycle(Graph::Node *start, Graph::Node *target, Graph::Check *visi
         }
     }
 
-    if(depth > 0 && start == target){
-        initVisitArray(visit);
-        return 1;
-    }
+    if(depth > 0 && start == target){ return 1; }
     if(current->isVisited) { return 0; }
 
     for(auto i = target->directedList().begin(); i != nullptr; i = i->next){
+        int tmp;
         current->isVisited = true;
-        int tttt = result;
-        result += _numCycle(start, i->data, visit, isChecked, depth + 1);
-        if(result > tttt) {
-            std::cout << i->data->label();
-            isChecked.append(i->data);
-        }
+        tmp = _numCycle(start, i->data, visit, isChecked, depth + 1);
+        if(tmp > 0) { isChecked.append(i->data); }
+        result += tmp;
+        current->isVisited = false;
     }
 
     return result;
@@ -121,11 +117,13 @@ int Graph::addEdge(string nodeA, string nodeB) {
 
     if(targetA == nullptr){
         targetA = genNode(nodeA);
+        size++;
         result = 1;
     }
 
     if(targetB == nullptr){
         targetB = genNode(nodeB);
+        size++;
         result = 1;
     }
 
@@ -175,18 +173,19 @@ int Graph::getCycleCount() {
     int result = 0;
     List<Node*> isChecked;
 
+    initVisitArray(visit);
+
+    // result = _newCycle(nodeList.begin()->data, visit, 0);
+
     for(auto i = nodeList.begin(); i != nullptr; i = i->next){
         if(isChecked.isExist(i->data)){
             continue;
         } else {
-            cout << i->data->label() <<endl;
             initVisitArray(visit);
             result += _numCycle(i->data, i->data, visit,isChecked, 0);
-            cout << endl;
         }
 
     }
-
 
     return result;
 
