@@ -131,27 +131,8 @@ private:
 
     int _connected(Node* target, Check visit[], List<Node*>& result);
 
-    int _numCycle(Node* start, Node* target, Check visit[], List<Node*>& isChecked, int depth);
+    int _numCycle(Node* start, Node* target, Check *visit, List<Node*>& check, int depth);
 
-    int _newCycle(Node* target, Check visit[], int depth){
-        Check* current;
-        int result = 0;
-        for(int i = 0; i < size; i++){
-            if(visit[i].data == target){ current = &(visit[i]); break; }
-        }
-
-        if(current->isVisited) { return 1; }
-
-        for(auto i = target->directedList().begin(); i != nullptr; i = i ->next){
-            current->isVisited = true;
-            result += _newCycle(i->data, visit, depth + 1);
-            current->isVisited = false;
-        }
-
-        return result;
-
-
-    }
     string makeLexiStr(List<Node*>& target);
 
     ///////////      End of Implementation      /////////////

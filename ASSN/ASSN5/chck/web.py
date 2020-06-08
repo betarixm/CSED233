@@ -24,6 +24,19 @@ def gen(target: str):
     return target
 
 
-aa = """[('B', 'E'),('E', 'A'),('E', 'D'),('B', 'A'),('B', 'C'),('B', 'D'),('D', 'A'),('E', 'B'),('D', 'E'),('D', 'C'),('A', 'E'),('A', 'B'),('C', 'E'),('E', 'C'),('C', 'B')]"""
+aa = """A B
+B A
+B C
+C B
+C D
+D C
+D A
+A D
+B F
+F B
+F G
+G F
+G C
+C G"""
 
-print(cmd_to_site(aa))
+print(site_to_cmd(aa))

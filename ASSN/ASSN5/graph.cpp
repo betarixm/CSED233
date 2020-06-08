@@ -57,30 +57,6 @@ int Graph::_connected(Graph::Node *target, Graph::Check *visit, List<Node *> &re
     return len;
 }
 
-int Graph::_numCycle(Graph::Node *start, Graph::Node *target, Graph::Check *visit, List<Node *> &isChecked, int depth) {
-    Check* current;
-    int result = 0;
-    for(auto i = 0; i < size; i++){
-        if(visit[i].data == target){
-            current = &(visit[i]); break;
-        }
-    }
-
-    if(depth > 0 && start == target){ return 1; }
-    if(current->isVisited) { return 0; }
-
-    for(auto i = target->directedList().begin(); i != nullptr; i = i->next){
-        int tmp;
-        current->isVisited = true;
-        tmp = _numCycle(start, i->data, visit, isChecked, depth + 1);
-        if(tmp > 0) { isChecked.append(i->data); }
-        result += tmp;
-        current->isVisited = false;
-    }
-
-    return result;
-}
-
 string Graph::makeLexiStr(List<Node *> &target) {
     List<Node*> lexiList;
     string result;
@@ -103,6 +79,28 @@ string Graph::makeLexiStr(List<Node *> &target) {
 
     return result;
 }
+
+int Graph::_numCycle(Graph::Node *start, Graph::Node *target, Check *visit, List<Node *> &check, int depth) {
+    Check* current;
+    int result = 0;
+    for(int i = 0; i < size; i++){
+        if(visit[i].data == target){
+            current = &(visit[i]); break;
+        }
+    }
+
+    if(depth > 0 && start == target) { return 1; }
+    if(current->isVisited || check.isExist(target)) { return 0; }
+
+    for(auto i = target->directedList().begin(); i != nullptr; i = i->next){
+        current->isVisited = true;
+        result += _numCycle(start, i->data, visit, check, depth + 1);
+        current->isVisited = false;
+    }
+
+    return result;
+}
+
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
 
@@ -171,20 +169,14 @@ int Graph::getCycleCount() {
 
     auto* visit = new Graph::Check[size];
     int result = 0;
-    List<Node*> isChecked;
+    List<Node*> check;
 
     initVisitArray(visit);
 
-    // result = _newCycle(nodeList.begin()->data, visit, 0);
-
     for(auto i = nodeList.begin(); i != nullptr; i = i->next){
-        if(isChecked.isExist(i->data)){
-            continue;
-        } else {
-            initVisitArray(visit);
-            result += _numCycle(i->data, i->data, visit,isChecked, 0);
-        }
-
+        initVisitArray(visit);
+        result += _numCycle(i->data, i->data, visit, check, 0);
+        check.append(i->data);
     }
 
     return result;
@@ -192,5 +184,7 @@ int Graph::getCycleCount() {
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
+
+
 
 
