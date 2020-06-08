@@ -96,10 +96,16 @@ string HashTable::search(string value) {
     /////////////////////////////////////////////////////////
 }
 
+
 /////////////////////////////////////////////////////////
 //////////  TODO: Implement From Here      //////////////
 
 /*  Write your codes if you have additional functions  */
 
+int HashTable::sumStr(string &value) {
+    int result = 0;
+    for(char i: value){ result += i; }
+    return result;
+}
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////

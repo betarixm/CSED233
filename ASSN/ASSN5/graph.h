@@ -121,105 +121,19 @@ private:
     List<Node*> nodeList;
     int size = 0;
 
-    Node* getNodeByLabel(const string& label){
-        for(auto i = nodeList.begin(); i != nullptr; i = i->next){
-            if(i->data->label() == label){
-                return i->data;
-            }
-        }
-        return nullptr;
-    }
+    Node* getNodeByLabel(const string& label);
 
-    Node* genNode(const string& label){
-        Node* tmp = new Node(label);
-        nodeList.append(tmp);
-        size++;
-        return tmp;
-    }
+    Node* genNode(const string& label);
 
-    void initVisitArray(Check isVisited[]){
-        int counter = 0;
-        for(auto i = nodeList.begin(); i != nullptr; i = i->next) {
-            isVisited[counter++] = (Check) { i->data, false };
-        }
-    }
+    void initVisitArray(Check isVisited[]);
 
-    bool checkVisited(Node* target, Check isVisited[]){
-        for(int i = 0; i < size; i++){
-            if(isVisited[i].data == target && isVisited[i].isVisited){ return true; }
-        }
-        return false;
-    }
+    bool checkVisited(Node* target, Check isVisited[]);
 
-    int _connected(Node* target, Check visit[], List<Node*>& result) {
-        int len = 0;
+    int _connected(Node* target, Check visit[], List<Node*>& result);
 
-        for(auto i = 0; i < size; i++){
-            if(visit[i].data == target){
-                visit[i].isVisited=true; break;
-            }
-        }
+    int _numCycle(Node* start, Node* target, Check visit[], List<Node*>& isChecked, int depth);
 
-        result.append(target);
-        for(auto i = target->undirectedList().begin(); i != nullptr; i = i->next){
-            if(checkVisited(i->data, visit)) { continue; }
-            len = 1 + _connected(i->data, visit, result);
-        }
-
-        return len;
-    }
-
-
-    int _numCycle(Node* start, Node* target, Check visit[], List<Node*>& isChecked, int depth){
-        Check* current;
-        int result = 0;
-        for(auto i = 0; i < size; i++){
-            if(visit[i].data == target){
-                current = &(visit[i]); break;
-            }
-        }
-
-        if(depth > 0 && start == target){
-            initVisitArray(visit);
-            return 1;
-        }
-        if(current->isVisited) { return 0; }
-
-        for(auto i = target->directedList().begin(); i != nullptr; i = i->next){
-            current->isVisited = true;
-            int tttt = result;
-            result += _numCycle(start, i->data, visit, isChecked, depth + 1);
-            if(result > tttt) {
-                // std::cout << i->data->label();
-                isChecked.append(i->data);
-            }
-        }
-
-        return result;
-    }
-
-    string makeLexiStr(List<Node*>& target){
-        List<Node*> lexiList;
-        string result;
-        for(auto t = target.begin(); t != nullptr; t = t->next){
-            if(lexiList.size() == 0 || t->data->label() < lexiList.begin()->data->label()){
-                lexiList.push(t->data);
-            } else {
-                auto l = lexiList.begin();
-                for(; l->next != nullptr; l = l->next){
-                    if(l->next->data->label() >= t->data->label()){ break; }
-                }
-                lexiList.insert(l, t->data);
-            }
-        }
-
-        for(auto i = lexiList.begin(); i != nullptr; i = i->next){
-            result += i->data->label();
-            if(i != lexiList.end()) { result += " "; }
-        }
-
-        return result;
-    }
+    string makeLexiStr(List<Node*>& target);
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////

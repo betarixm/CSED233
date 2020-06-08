@@ -28,11 +28,7 @@ private:
     //////  TODO: Add private members if required ///////////
     List<string>* table;
 
-    int sumStr(string& value){
-        int result = 0;
-        for(char i: value){ result += i; }
-        return result;
-    }
+    int sumStr(string& value);
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
