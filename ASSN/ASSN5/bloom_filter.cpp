@@ -11,10 +11,9 @@ BloomFilter::BloomFilter(int key_size,
                          int vector_size)
 :    key_size(key_size), vector_size(vector_size)
 {
+    this->bit_vector = new bool[this->vector_size];
     /////////////////////////////////////////////////////////
     //////////    TODO: Implement From Here    //////////////
-
-    this->bit_vector = new bool[this->vector_size];  // Do not modify this line
     for(int i = 0; i < vector_size; i++){
         bit_vector[i] = false;
     }
@@ -28,6 +27,8 @@ BloomFilter::BloomFilter(int key_size,
 BloomFilter::~BloomFilter() {
     /////////////////////////////////////////////////////////
     //////////    TODO: Implement From Here    //////////////
+
+    /*             Write your codes if you need            */
     delete hf1;
     delete hf2;
     ///////////      End of Implementation      /////////////

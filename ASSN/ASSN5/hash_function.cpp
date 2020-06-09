@@ -44,6 +44,5 @@ int StringFoldingHashFunction::hashing(string value) {
 
 /*   Write your codes if you have additional classes   */
 
-
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////

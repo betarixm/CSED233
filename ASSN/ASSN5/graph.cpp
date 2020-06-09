@@ -58,23 +58,23 @@ int Graph::_connected(Graph::Node *target, Graph::Check *visit, List<Node *> &re
 }
 
 string Graph::makeLexiStr(List<Node *> &target) {
-    List<Node*> lexiList;
+    string tmp;
     string result;
-    for(auto t = target.begin(); t != nullptr; t = t->next){
-        if(lexiList.size() == 0 || t->data->label() < lexiList.begin()->data->label()){
-            lexiList.push(t->data);
-        } else {
-            auto l = lexiList.begin();
-            for(; l->next != nullptr; l = l->next){
-                if(l->next->data->label() >= t->data->label()){ break; }
-            }
-            lexiList.insert(l, t->data);
-        }
-    }
 
-    for(auto i = lexiList.begin(); i != nullptr; i = i->next){
-        result += i->data->label();
-        if(i != lexiList.end()) { result += " "; }
+    for(auto t = target.begin(); t != nullptr; t = t->next){ tmp += t->data->label(); }
+    int length = tmp.length();
+
+    for(int i = 0; i < length; i++){
+        char min = tmp[i];
+        for(int sub = i; sub < length; sub++){
+            if(tmp[sub] < min){
+                min = tmp[sub];
+                T_swap<char>(tmp[i], tmp[sub]);
+            }
+        }
+
+        result += min;
+        if(i != length-1) { result += " "; }
     }
 
     return result;
@@ -182,7 +182,3 @@ int Graph::getCycleCount() {
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 }
-
-
-
-

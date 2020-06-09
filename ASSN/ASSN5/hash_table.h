@@ -3,7 +3,7 @@
 #include <string>
 #include "hash_function.h"
 #include "bloom_filter.h"
-#include "graph.h"
+#include "graph.h" // By QnA, I can include this. https://lms.postech.ac.kr/Board.do?cmd=viewBoardContents&boardInfoDTO.boardInfoId=20200900140073401661225QN&boardContentsDTO.boardContentsId=BOAD_200604191826c0f103eb&boardContentsDTO.contentsNo=107&boardContentsDTO.gongjiYn=N&gubun=V&curPage=2&typeYn=Y
 using namespace std;
 
 

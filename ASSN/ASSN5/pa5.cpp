@@ -50,18 +50,18 @@ using namespace std;
 
 void task_1(ofstream &fout) {
     fout << "[Task 1]" << endl;
-    string answer = "1 1 1 1";  // TODO: Change to your answer
+    string answer = "1 3 3 4";  // TODO: Change to your answer
     fout << answer << endl;
 }
 
 
 /*
-    [Task 2] Connected Components of Graph 
+    [Task 2] Connected Components of Graph
 
     Description:
         Implement a function that retrieves the largest connected components from the given undirected graph. 
         This function finds the largest connected component that can be found in the given graph and prints out the node labels of it. 
-        There might be multiple connected components with the same l_size.
+        There might be multiple connected components with the same size.
         If that is the case, retrieve the component that comes first in lexicographical order. 
         For instance, if two connected components, (A, B, C) and (A, B, D) are found, select
         (A, B, C) because C comes first than D in lexicographical order. 
@@ -78,7 +78,7 @@ void task_1(ofstream &fout) {
 void task_2(ofstream &fout, InstructionSequence &instr_seq) {
     fout << "[Task 2]" << endl;
     try {
-      Graph graph;
+      Graph graph(false);
       for (int i = 0; i < instr_seq.getLength(); i++) {
           string firstNode = instr_seq.getInstruction(i).getCommand();
           string secondNode = instr_seq.getInstruction(i).getValueStr();
@@ -114,7 +114,7 @@ void task_2(ofstream &fout, InstructionSequence &instr_seq) {
 void task_3(ofstream &fout, InstructionSequence &instr_seq) {
     fout << "[Task 3]" << endl;
     try {
-      Graph graph;
+      Graph graph(true);
       for (int i = 0; i < instr_seq.getLength(); i++) {
           string firstNode = instr_seq.getInstruction(i).getCommand();
           string secondNode = instr_seq.getInstruction(i).getValueStr();
@@ -133,7 +133,7 @@ void task_3(ofstream &fout, InstructionSequence &instr_seq) {
         Implement a hash table with open hashing to handle collision (a.k.a separate chaining).
         This hash table uses a key obtained from the string folding method \
             (please check page 6 in Week10_02_Dictionary_Hashing.pdf).
-        The l_size of the hash table is M.
+        The size of the hash table is M.
         You can modify hash_function.cpp, hash_function.h, hash_table.cpp, \
             and hash_table.h files for this problem.
 
@@ -142,7 +142,7 @@ void task_3(ofstream &fout, InstructionSequence &instr_seq) {
 
     Input & Output:
         Input: A sequence of commands
-          - ('M', integer): The l_size of an idex. (The first command is always 'M')
+          - ('M', integer): The size of an idex. (The first command is always 'M')
           - ('insert', 'string'): insert string into the hash table.
           - ('search', 'string'): search string in the hash table.
         Output
@@ -201,8 +201,8 @@ void task_4(ofstream &fout, InstructionSequence &instr_seq) {
 
     Input & Output:
         Input: A sequence of commands
-          - ('M', integer): The l_size of an idex. (The first command is always 'M')
-          - ('b', integer): the l_size of a bloom filter. (The second command is always 'b')
+          - ('M', integer): The size of an idex. (The first command is always 'M')
+          - ('b', integer): the size of a bloom filter. (The second command is always 'b')
           - ('insert', 'string'): insert string into the hash table.
           - ('search', 'string'): search string in the hash table.
         Output
@@ -231,7 +231,7 @@ void task_5(ofstream &fout, InstructionSequence &instr_seq) {
         M = instr_seq.getInstruction(0).getValue();
         b = instr_seq.getInstruction(1).getValue();
         hf = new StringFoldingHashFunction(M);
-        bloom_filter = new BloomFilter(key_size, b);
+        bloom_filter = new BloomFilter(16, b);
         ht = new HashTable(M, hf, bloom_filter);
 
         for (int i = 2; i < instr_seq.getLength(); i++) {

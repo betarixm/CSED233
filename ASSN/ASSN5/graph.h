@@ -32,18 +32,6 @@ public:
         return *this;
     }
 
-    List& push(T data){
-        auto* tmp = new ListNode;
-        tmp->data= data, tmp->next = l_begin;
-
-        if(l_size == 0){
-            l_end = tmp;
-        }
-        l_begin = tmp;
-        l_size++;
-        return *this;
-    }
-
     List& insert(ListNode* target, T data){
         auto* tmp = new ListNode;
         tmp->data = data;
@@ -73,12 +61,19 @@ public:
 
     int size() const { return l_size; }
 };
+
+template<typename T>
+void T_swap(T& a, T&b){
+    T tmp = a;
+    a = b;
+    b = tmp;
+}
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
 
 class Graph{
 public:
-    Graph() { };
+    Graph(bool _isDirected=false) {isDirected = _isDirected; };
     ~Graph() { };
 
     int addEdge(string nodeA, string nodeB);
@@ -86,11 +81,9 @@ public:
     int getCycleCount();
 
 private:
+    bool isDirected;
     /////////////////////////////////////////////////////////
     //////  TODO: Add private members if required ///////////
-
-
-
     class Node{
     private:
         string _label;
