@@ -342,6 +342,29 @@ private:
             pathDfs(i->data.first(), visit);
         }
     }
+
+    using NodePair = Pair<Node*, Node*>;
+    using NodeWeight = Pair<NodePair, int>;
+
+    void PRIM(ofstream& fout, Node* target, List<NodeWeight>& sorted, List<Node*>& visit, int& length){
+        visit.append(target);
+        for(auto i = target->undirectedList().begin(); i != nullptr; i = i->next){
+            auto tmp = NodeWeight (NodePair (target, i->data.first()),i ->data.second());
+            sorted.sortedPush(tmp, [](ListNode<NodeWeight>* n, NodeWeight cmp){
+                return (n->data.second() < cmp.second() && (n->next == nullptr || (cmp.second() < n->next->data.second())));
+            });
+        }
+        for(auto i = sorted.begin(); i != nullptr; i = i->next){
+            NodePair pair = i->data.first();
+            int weight = i->data.second();
+            if(visit.isExist(pair.second())){ continue; }
+            fout << pair.first()->label() << " " << pair.second()->label() << " " << weight << endl;
+            length += weight;
+            PRIM(fout, pair.second(), sorted,visit, length);
+        }
+    }
+
+
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 };

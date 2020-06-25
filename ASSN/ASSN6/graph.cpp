@@ -161,8 +161,8 @@ int Graph::addUndirectedEdge(string nodeA, string nodeB, int weight) {
     Node* targetA = nullptr, *targetB = nullptr;
     int result = initNode(targetA, targetB, nodeA, nodeB);
 
-    targetA->undirectLink(targetB, 1);
-    targetB->undirectLink(targetA, 1);
+    targetA->undirectLink(targetB, weight);
+    targetB->undirectLink(targetA, weight);
     return result;
 
     ///////////      End of Implementation      /////////////
@@ -271,7 +271,16 @@ int Graph::primMST(ofstream &fout, string startNode) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
-    return 0;
+    List<Pair<Pair<Node*, Node*>, int>> sorted;
+    List<Node*> visit;
+    List<string> resultStrList;
+    int length = 0;
+
+    Node* start = getNodeByLabel(startNode);
+
+    PRIM(fout, start, sorted, visit, length);
+
+    return length;
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
