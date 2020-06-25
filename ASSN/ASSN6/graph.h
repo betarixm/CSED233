@@ -8,6 +8,9 @@ using namespace std;
 /////////////////////////////////////////////////////////
 ///  TODO: Add Your Struct or Functions if required /////
 
+
+
+
 template<typename T>
 void T_swap(T& a, T&b){
     T tmp = a;
@@ -111,12 +114,12 @@ private:
     X _first;
     Y _second;
 public:
-    Pair(const X x, const Y y): _first(x), _second(y) {};
+    Pair(X x, Y y): _first(x), _second(y) {};
+    Pair(): _first(NULL), _second(NULL) {};
+    X& first(){ return _first; }
+    Y& second() { return _second; }
 
-    X first(){ return _first; }
-    Y second() { return _second; }
-
-    Pair operator=(Pair& target){
+    Pair& operator=(Pair target){
         _first = target.first();
         _second = target.second();
         return *this;
@@ -130,6 +133,30 @@ public:
     }
 
 };
+
+template<typename T>
+class Index{
+private:
+    T* data;
+    int size;
+    int counter = 0;
+public:
+    explicit Index(int _size): size(_size), data(new T[_size]) {};
+    explicit Index(List<T> list): size(list.size()), data(new T[list.size()]){
+        for(auto i = list.begin(); i != nullptr; i = i->next){
+            push(i->data);
+        }
+    }
+    void push(T _data){ if(counter < size){ data[counter++] = _data; } }
+
+    T operator[](int idx){ return data[idx]; }
+
+    int operator[](T idx){
+        for(int i = 0; i < size; i++){ if (data[i] == idx){ return i; } }
+        return -1;
+    }
+};
+
 
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
@@ -155,9 +182,7 @@ public:
 private:
     /////////////////////////////////////////////////////////
     //////  TODO: Add private members if required ///////////
-
-    class Node;
-
+    const int INF = (unsigned int)~0 >> 1;
 
     class Node{
     private:
@@ -211,17 +236,30 @@ private:
 
     int initNode(Node*& nodeA, Node*& nodeB, const string& labelA, const string& labelB);
 
-    void _DFS(Node* target, List<Node*>& visit, List<Node*>& result);
+    void recurDFS(Node* target, List<Node*>& visit, List<Node*>& result);
 
-    void _TOPO(Node* target, List<Node*>& visit, List<Node*>& result){
-        if(visit.isExist(target)) return;
+    bool TOPO(Node* target, List<Node*>& visit, List<Node*>& test, List<Node*>& result){
+        bool isDone = true;
+        test.sortedPush(target, [](ListNode<Node*>* n, Node* cmp){
+            return (*(n->data) < *cmp && (n->next == nullptr || (*cmp < *(n->next->data))));
+        });
         visit.append(target);
+        result.append(target);
 
         for(auto i = target->directedList().begin(); i != nullptr; i = i->next){
-            _TOPO(i->data.first(), visit, result);
+            if(visit.isExist(i->data.first())) { return false; }
+            test.sortedPush(i->data.first(), [](ListNode<Node*>* n, Node* cmp){
+                return (*(n->data) < *cmp && (n->next == nullptr || (*cmp < *(n->next->data))));
+            });
         }
 
-        result.insert(nullptr, target);
+        for(auto i = test.begin(); i != nullptr; i = i->next){
+            if(result.isExist(i->data)){ continue; }
+            isDone = TOPO(i->data, visit, test, result);
+            break;
+        }
+
+        return isDone;
     }
 
     string sort(string* tmp, int length, string sep);
@@ -229,6 +267,81 @@ private:
     string makeLexiStr(List<string> &target, string sep);
     string makeNodeStr(List<Node *>& target, string sep);
 
+    using CheckVector = List<Node*>;
+    using Dist = Pair<Node*, int>;
+    using DistArray = Dist*;
+    using DijkVector = Pair<CheckVector*, DistArray>;
+    using DijkList = List<DijkVector*>;
+    DijkVector* initVector(){
+        return new DijkVector(new CheckVector, new Dist[nodeList.size()]);
+    }
+
+    void showDijkList(DijkList& l){
+        for(auto i = l.begin(); i != nullptr; i = i->next){
+            for(auto j = i->data->first()->begin(); j != nullptr; j = j->next){
+                cout << j->data->label();
+            }
+            cout << endl;
+        }
+    }
+    void copyDijkVector(DijkVector& src, DijkVector& dst){
+        for(auto i = src.first()->begin(); i != nullptr; i = i->next){
+            dst.first()->append(i->data);
+        }
+        for(int i = 0; i < nodeList.size(); i++){
+            dst.second()[i] = src.second()[i];
+        }
+    }
+
+    void dijk(Node* target, Node* dst, int d, DijkVector& v, DijkList& l, Index<Node*>& index){
+        int targetDist = d;
+        auto k = initVector();
+
+        copyDijkVector(v, *k);
+        k->first()->append(target);
+        for(auto fre = target->directedList().begin(); fre != nullptr; fre = fre->next){
+            if(k->first()->isExist(fre->data.first())) { continue; }
+            int tmp = targetDist + fre->data.second();
+            if(tmp < k->second()[index[fre->data.first()]].second()){
+                k->second()[index[fre->data.first()]] = Dist(target, tmp);
+            }
+        }
+
+        if(target == dst) {
+            l.append(k);
+            return;
+        }
+
+        Dist min = Dist(nullptr, INF);
+        for(auto i = nodeList.begin(); i != nullptr; i = i->next){
+            if(k->first()->isExist(i->data)) { continue; }
+            if(k->second()[index[i->data]].second() < min.second()){
+                min = k->second()[index[i->data]];
+            }
+        }
+
+        for(auto i = nodeList.begin(); i != nullptr; i = i->next){
+            if(k->first()->isExist(i->data)) { continue; }
+            if(k->second()[index[i->data]].second() == min.second()){
+                dijk(i->data, dst, min.second(),*k, l, index);
+            }
+        }
+    }
+
+    bool checkPath(Node* src, Node* dst){
+        List<Node*> visit;
+        pathDfs(src, visit);
+
+        return visit.isExist(dst);
+    }
+
+    void pathDfs(Node* target, List<Node*>& visit){
+        if(visit.isExist(target)){ return; }
+        visit.append(target);
+        for(auto i = target->directedList().begin(); i != nullptr; i = i->next){
+            pathDfs(i->data.first(), visit);
+        }
+    }
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 };

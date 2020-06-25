@@ -40,13 +40,13 @@ int Graph::initNode(Graph::Node *&nodeA, Graph::Node *&nodeB, const string &labe
 
 }
 
-void Graph::_DFS(Graph::Node *target, List<Node *> &visit, List<Node *> &result) {
+void Graph::recurDFS(Graph::Node *target, List<Node *> &visit, List<Node *> &result) {
     if(visit.isExist(target)) return;
     result.append(target);
     visit.append(target);
 
     for (auto i =target->undirectedList().begin(); i != nullptr; i = i->next){
-        _DFS(i->data.first(), visit, result);
+        recurDFS(i->data.first(), visit, result);
     }
 
 }
@@ -178,7 +178,7 @@ string Graph::DFS() {
     for(auto i = nodeList.begin(); i != nullptr; i = i->next){
         if(visit.isExist(i->data)){ continue; }
         List<Node*> result;
-        _DFS(i->data, visit, result);
+        recurDFS(i->data, visit, result);
         resultStrList.append(makeNodeStr(result, " "));
     }
 
@@ -192,12 +192,17 @@ string Graph::DFS() {
 string Graph::getTopologicalSort() {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
+
     List<Node*> visit;
     List<string> resultStrList;
     for(auto i = nodeList.begin(); i != nullptr; i = i->next){
         if(visit.isExist(i->data)){ continue; }
         List<Node*> result;
-        _TOPO(i->data, visit, result);
+        List<Node*> test;
+
+        if(!TOPO(i->data, visit, test, result)){
+            return "error";
+        };
         resultStrList.append(makeNodeStr(result, " "));
     }
 
@@ -212,7 +217,41 @@ string Graph::getShortestPath(string source, string destination) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
-    return "";
+    Node* src = getNodeByLabel(source);
+    Node* dst = getNodeByLabel(destination);
+
+    if(src == nullptr || dst == nullptr) { return "error"; }
+
+    if(!checkPath(src, dst)){ return "error"; }
+    List<string> resultStrList;
+    Index<Node*> index(nodeList);
+    DijkList l;
+    DijkVector* v = initVector();
+
+    for(int i = 0; i < nodeList.size(); i++){
+        v->second()[i].first() = index[i];
+        v->second()[i].second() = INF;
+    }
+
+    v->second()[index[src]].first() = src;
+    v->second()[index[src]].second() = 0;
+
+
+    dijk(src, dst, 0, *v, l, index);
+
+    for(auto i = l.begin(); i != nullptr; i = i->next){
+        string result;
+
+        for(Node* target = dst; target != src; target = i->data->second()[index[target]].first()){
+            result = target->label() + " " + result;
+        }
+        result = src->label() + " " + result;
+        result += to_string(i->data->second()[index[dst]].second());
+        resultStrList.append(result);
+    }
+
+    string result = makeLexiStr(resultStrList, "\n");
+    return result;
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
