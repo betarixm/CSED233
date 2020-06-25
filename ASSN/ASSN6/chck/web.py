@@ -25,12 +25,7 @@ def gen(target: str):
     return target
 
 
-aa = """A B
-B C
-C A
-D E
-E F
-F D"""
+aa = """[('0','2'), ('0','1'), ('0','3'), ('1','2'), ('1','3'), ('1','4'), ('1','5'), ('2','5'), ('2','4')]"""
 
 tmp = cmd_to_site(aa) if aa[0] == "[" else site_to_cmd(aa)
 print(tmp)
