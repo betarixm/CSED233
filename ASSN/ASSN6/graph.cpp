@@ -290,7 +290,31 @@ int Graph::kruskalMST(ofstream &fout) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
-    return 0;
+    int length = 0;
+    List<string> resultStrList;
+    List<NodeWeight> weightList;
+
+    initWeightList(weightList);
+
+    for(auto i = weightList.begin(); i != nullptr; i = i->next){
+        List<Node*> visit;
+        NodePair p = i->data.first();
+        Node* from = p.first();
+        Node* to = p.second();
+        int weight = i->data.second();
+
+        kruskalDFS(from, visit);
+        if(visit.isExist(to)) continue;
+        from->kruskal().append(to);
+        to->kruskal().append(from);
+        string s = from->label() + " " + to->label()+ " " + to_string(weight);
+        resultStrList.append(s);
+        length += weight;
+    }
+
+    string result = makeLexiStr(resultStrList, "\n");
+    fout << result << endl;
+    return length;
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////

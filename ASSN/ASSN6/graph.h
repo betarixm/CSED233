@@ -132,6 +132,9 @@ public:
         return _first < rhs._first;
     }
 
+    bool operator==(const Pair<X,Y> target){
+        return target._first == _first && _second == target._second;
+    }
 };
 
 template<typename T>
@@ -190,7 +193,7 @@ private:
 
         List<Pair<Node*, int>> _undirectedList;
         List<Pair<Node*, int>> _directedList;
-
+        List<Node*> _kruskal;
 
     public:
         explicit Node(const string& l) { _label = l; };
@@ -212,6 +215,7 @@ private:
 
         List<Pair<Node*, int>> undirectedList() const { return _undirectedList; }
         List<Pair<Node*, int>> directedList() const { return _directedList; }
+        List<Node*>& kruskal() { return _kruskal; }
         bool operator< (const Node& rhs) const {
             if(isInteger(rhs.label()) && isInteger(label())){
                 return stoi(label()) < stoi(rhs.label());
@@ -351,7 +355,15 @@ private:
         for(auto i = target->undirectedList().begin(); i != nullptr; i = i->next){
             auto tmp = NodeWeight (NodePair (target, i->data.first()),i ->data.second());
             sorted.sortedPush(tmp, [](ListNode<NodeWeight>* n, NodeWeight cmp){
-                return (n->data.second() < cmp.second() && (n->next == nullptr || (cmp.second() < n->next->data.second())));
+                Node* n_from = n->data.first().first(), * c_from = cmp.first().first();
+                Node* n_to = n->data.first().second(), * c_to = cmp.first().second();
+                int n_weight = n->data.second(), c_weight = cmp.second();
+
+                return (n_weight == c_weight)
+                       ?( (n_from->label() == c_from->label())
+                          ? (*(n_to) < *(c_to) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_to < *(n->next->data.first().second()))))
+                          : (*(n_from) < *(c_from) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_from < *(n->next->data.first().first())))))
+                       :(n_weight < c_weight && (n->next == nullptr || (c_weight < n->next->data.second())));
             });
         }
         for(auto i = sorted.begin(); i != nullptr; i = i->next){
@@ -364,7 +376,44 @@ private:
         }
     }
 
+    bool isDupWeight(Node* from, Node* to, List<NodeWeight>& weightList){
+        for(auto j = weightList.begin(); j != nullptr; j = j->next){
+            NodeWeight tmp = j->data;
+            if(tmp.first() == NodePair(to, from) || tmp.first() == NodePair(from, to)){ return true; }
+        }
+        return false;
+    }
 
+    void initWeightList(List<NodeWeight>& weightList){
+        for(auto i = nodeList.begin(); i != nullptr; i = i->next){
+            Node* from = i->data;
+            for(auto fre = from->undirectedList().begin(); fre != nullptr; fre = fre->next){
+                Node* to = fre->data.first();
+                int weight = fre->data.second();
+                if(isDupWeight(from, to, weightList)) { continue; }
+                NodePair p = (from->label() < to->label()) ? (NodePair(from, to)) : (NodePair(to, from));
+                weightList.sortedPush(NodeWeight(p, weight), [](ListNode<NodeWeight>* n, NodeWeight cmp){
+                    Node* n_from = n->data.first().first(), * c_from = cmp.first().first();
+                    Node* n_to = n->data.first().second(), * c_to = cmp.first().second();
+                    int n_weight = n->data.second(), c_weight = cmp.second();
+
+                    return (n_weight == c_weight)
+                           ?( (n_from->label() == c_from->label())
+                              ? (*(n_to) < *(c_to) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_to < *(n->next->data.first().second()))))
+                              : (*(n_from) < *(c_from) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_from < *(n->next->data.first().first())))))
+                           :(n_weight < c_weight && (n->next == nullptr || (c_weight < n->next->data.second())));
+                });
+            }
+        }
+    }
+
+    void kruskalDFS(Node* target, List<Node*>& visit){
+        if(visit.isExist(target)) { return; }
+        visit.append(target);
+        for(auto i = target->kruskal().begin(); i != nullptr; i = i->next){
+            kruskalDFS(i->data, visit);
+        }
+    }
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
 };
