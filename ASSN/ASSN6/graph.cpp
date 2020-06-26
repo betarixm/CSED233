@@ -120,6 +120,205 @@ bool isInteger(const string &str) {
     }
 }
 
+void Graph::updateTopoRefCount(List<Node *> &v) {
+    for(auto i = nodeList.begin(); i != nullptr; i = i->next){
+        if(v.isExist(i->data)) { continue; }
+        for(auto j = i->data->directedList().begin(); j != nullptr; j=j->next){
+            j->data.first()->topoRefCount() += 1;
+        }
+    }
+}
+
+void Graph::copyDijkVector(Graph::DijkVector &src, Graph::DijkVector &dst) {
+    for(auto i = src.first()->begin(); i != nullptr; i = i->next){
+        dst.first()->append(i->data);
+    }
+    for(int i = 0; i < nodeList.size(); i++){
+        dst.second()[i] = src.second()[i];
+    }
+}
+
+Graph::DijkVector *Graph::initDijkVector() {
+    auto v = new DijkVector(new CheckVector, new Dist[nodeList.size()]);
+    for(int i = 0; i < nodeList.size(); i++){
+        v->second()[i].first() = new PathVector;
+        v->second()[i].second() = INF;
+    }
+
+    return v;
+}
+
+void Graph::dijkString(string origin, Graph::Node *target, Graph::Node *src, Graph::DijkVector &v, List<string> &result,
+                       Index<Node *> &index) {
+    if(target == src){
+        if (!result.isExist(origin)){result.append(origin);}
+        return;
+    }
+
+    PathVector* p = v.second()[index[target]].first();
+    for(auto i = p->begin(); i != nullptr; i = i->next){
+        string label = i->data->label() + " " + origin;
+        dijkString(label, i->data, src, v, result, index);
+    }
+}
+
+void
+Graph::dijk(Graph::Node *target, Graph::Node *dst, long long int targetDist, Graph::DijkVector &v, Graph::DijkList &l,
+            Index<Node *> &index) {
+    auto k = initDijkVector();
+    copyDijkVector(v, *k);
+
+    CheckVector* check = k->first();
+    DistArray distArray = k->second();
+
+    check->append(target);
+
+    for(auto fri = target->directedList().begin(); fri != nullptr; fri = fri->next){
+        Dist* current = &(distArray[index[fri->data.first()]]);
+        long long test = targetDist + fri->data.second();
+        long long orin = current->second();
+
+        if(test < orin){
+            current->second() = test;
+            current->first()->reset(), current->first()->append(target);
+        } else if (test == orin) {
+            if(!current->first()->isExist(target)) { current->first()->append(target); }
+        }
+    }
+
+    if(check->size() == nodeList.size()){
+        l.append(k); return;
+    }
+
+    long long min = INF;
+    for(auto i = nodeList.begin(); i != nullptr; i = i->next){
+        if(check->isExist(i->data)){ continue; }
+        long long weight = k->second()[index[i->data]].second();
+        if(weight < min){
+            min = weight;
+        }
+    }
+
+    for(auto i = nodeList.begin(); i != nullptr; i = i->next){
+        if(check->isExist(i->data)){ continue;}
+        if(k->second()[index[i->data]].second() == min){
+            dijk(i->data, dst, min, *k, l, index);
+        }
+    }
+
+}
+
+bool Graph::checkPath(Graph::Node *src, Graph::Node *dst) {
+    List<Node*> visit;
+    pathDfs(src, visit);
+
+    return visit.isExist(dst);
+}
+
+void Graph::pathDfs(Graph::Node *target, List<Node *> &visit) {
+    if(visit.isExist(target)){ return; }
+    visit.append(target);
+    for(auto i = target->directedList().begin(); i != nullptr; i = i->next){
+        pathDfs(i->data.first(), visit);
+    }
+}
+
+void Graph::PRIM(ofstream &fout, Graph::Node *target, List<NodeWeight> &sorted, List<Node *> &visit, int &length) {
+    visit.append(target);
+    for(auto i = target->undirectedList().begin(); i != nullptr; i = i->next){
+        if(visit.isExist(i->data.first())){ continue; }
+        auto tmp = NodeWeight (NodePair (target, i->data.first()),i ->data.second());
+
+        sorted.sortedPush(tmp, [](ListNode<NodeWeight>* n, NodeWeight cmp){
+            Node* n_from = n->data.first().first(), * c_from = cmp.first().first();
+            Node* n_to = n->data.first().second(), * c_to = cmp.first().second();
+            int n_weight = n->data.second(), c_weight = cmp.second();
+            auto next = n->next;
+
+            return (n_weight == c_weight)?
+                   (   (n_to->label() == c_to->label())?
+                       ((*(n_from) < *(c_from)) && (next == nullptr || ((c_weight < n->next->data.second()) || *c_from < *(n->next->data.first().first())))):
+                       ((*(n_to) < *(c_to)) && (next == nullptr || ((c_weight < n->next->data.second()) || *c_to < *(n->next->data.first().second()))))):
+                   ((n_weight < c_weight) &&
+                    (next == nullptr || (((c_weight == next->data.second())?((c_to->label() == next->data.first().second()->label())?((*(c_from) < *(next->data.first().first()))):(*(c_to) < *(next->data.first().second()))):(c_weight < n->next->data.second())))));
+        });
+    }
+
+    for(auto i = sorted.begin(); i != nullptr; i = i->next){
+        NodePair pair = i->data.first();
+        int weight = i->data.second();
+        if(visit.isExist(pair.second())){ continue; }
+        fout << pair.first()->label() << " " << pair.second()->label() << " " << weight << endl;
+        length += weight;
+        PRIM(fout, pair.second(), sorted,visit, length);
+    }
+}
+
+bool Graph::isDupWeight(Graph::Node *from, Graph::Node *to, List<NodeWeight> &weightList) {
+    for(auto j = weightList.begin(); j != nullptr; j = j->next){
+        NodeWeight tmp = j->data;
+        if(tmp.first() == NodePair(to, from) || tmp.first() == NodePair(from, to)){ return true; }
+    }
+    return false;
+}
+
+void Graph::initWeightList(List<NodeWeight> &weightList) {
+    for(auto i = nodeList.begin(); i != nullptr; i = i->next){
+        Node* from = i->data;
+        for(auto fre = from->undirectedList().begin(); fre != nullptr; fre = fre->next){
+            Node* to = fre->data.first();
+            int weight = fre->data.second();
+            if(isDupWeight(from, to, weightList)) { continue; }
+            NodePair p = (from->label() < to->label()) ? (NodePair(from, to)) : (NodePair(to, from));
+            weightList.sortedPush(NodeWeight(p, weight), [](ListNode<NodeWeight>* n, NodeWeight cmp){
+                Node* n_from = n->data.first().first(), * c_from = cmp.first().first();
+                Node* n_to = n->data.first().second(), * c_to = cmp.first().second();
+                int n_weight = n->data.second(), c_weight = cmp.second();
+
+                return (n_weight == c_weight)
+                       ?( (n_from->label() == c_from->label())
+                          ? (*(n_to) < *(c_to) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_to < *(n->next->data.first().second()))))
+                          : (*(n_from) < *(c_from) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_from < *(n->next->data.first().first())))))
+                       :(n_weight < c_weight && (n->next == nullptr || (c_weight < n->next->data.second())));
+            });
+        }
+    }
+}
+
+void Graph::kruskalDFS(Graph::Node *target, List<Node *> &visit) {
+    if(visit.isExist(target)) { return; }
+    visit.append(target);
+    for(auto i = target->kruskal().begin(); i != nullptr; i = i->next){
+        kruskalDFS(i->data, visit);
+    }
+}
+
+
+bool Graph::Node::isLinked(Graph::Node *target, List<Pair<Node *, int>> &v) {
+    for(auto i = v.begin(); i != nullptr; i=i->next){
+        if(i->data.first() == target){
+            return true;
+        }
+    }
+    return false;
+}
+
+Graph::Node &Graph::Node::undirectLink(Graph::Node *target, int weight) {
+    if(isLinked(target, _undirectedList)){ return *this; }
+    _undirectedList.sortedPush(Pair<Node*, int>(target, weight), [](ListNode<Pair<Node*, int>>* n, Pair<Node*, int> cmp){
+        return (*(n->data.first()) < *(cmp.first()) && (n->next == nullptr || (*cmp.first() < *(n->next->data.first()))));
+    });
+    return *this;
+}
+
+Graph::Node &Graph::Node::directLink(Graph::Node *target, int weight) {
+    if(isLinked(target, _directedList)){ return *this; }
+    _directedList.sortedPush(Pair<Node*, int>(target, weight), [](ListNode<Pair<Node*, int>>* n, Pair<Node*, int> cmp){
+        return (*(n->data.first()) < *(cmp.first()) && (n->next == nullptr || (*cmp.first() < *(n->next->data.first()))));
+    });
+    return *this;
+}
+
 ///////////      End of Implementation      /////////////
 /////////////////////////////////////////////////////////
 
