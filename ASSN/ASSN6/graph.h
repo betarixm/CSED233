@@ -211,8 +211,8 @@ private:
         List<Pair<Node*, int>> _directedList;
         List<Node*> _kruskal;
         int _topoRefCount = 0;
-        bool isUndirectLinked(Node* target){
-            for(auto i = _undirectedList.begin(); i != nullptr; i=i->next){
+        bool isLinked(Node* target, List<Pair<Node*,int>>& v){
+            for(auto i = v.begin(); i != nullptr; i=i->next){
                 if(i->data.first() == target){
                     return true;
                 }
@@ -225,7 +225,7 @@ private:
         string label() const { return _label; }
         int& topoRefCount (){ return _topoRefCount; };
         Node& undirectLink(Node* target, int weight){
-            if(isUndirectLinked(target)){ return *this; }
+            if(isLinked(target, _undirectedList)){ return *this; }
             _undirectedList.sortedPush(Pair<Node*, int>(target, weight), [](ListNode<Pair<Node*, int>>* n, Pair<Node*, int> cmp){
                 return (*(n->data.first()) < *(cmp.first()) && (n->next == nullptr || (*cmp.first() < *(n->next->data.first()))));
             });
@@ -233,6 +233,7 @@ private:
         }
 
         Node& directLink(Node* target, int weight){
+            if(isLinked(target, _directedList)){ return *this; }
             _directedList.sortedPush(Pair<Node*, int>(target, weight), [](ListNode<Pair<Node*, int>>* n, Pair<Node*, int> cmp){
                 return (*(n->data.first()) < *(cmp.first()) && (n->next == nullptr || (*cmp.first() < *(n->next->data.first()))));
             });
@@ -400,20 +401,24 @@ private:
     void PRIM(ofstream& fout, Node* target, List<NodeWeight>& sorted, List<Node*>& visit, int& length){
         visit.append(target);
         for(auto i = target->undirectedList().begin(); i != nullptr; i = i->next){
+            if(visit.isExist(i->data.first())){ continue; }
             auto tmp = NodeWeight (NodePair (target, i->data.first()),i ->data.second());
+
             sorted.sortedPush(tmp, [](ListNode<NodeWeight>* n, NodeWeight cmp){
                 Node* n_from = n->data.first().first(), * c_from = cmp.first().first();
                 Node* n_to = n->data.first().second(), * c_to = cmp.first().second();
                 int n_weight = n->data.second(), c_weight = cmp.second();
+                auto next = n->next;
 
-                return (n_weight == c_weight)
-                       ?( (n_to->label() == c_to->label())
-                          ? (*(n_from) < *(c_from) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_from < *(n->next->data.first().first()))))
-                          : (*(n_to) < *(c_to) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_to < *(n->next->data.first().second()))))
-                        )
-                        :(n_weight < c_weight && (n->next == nullptr || (c_weight < n->next->data.second())));
+                return (n_weight == c_weight)?
+                (   (n_to->label() == c_to->label())?
+                        ((*(n_from) < *(c_from)) && (next == nullptr || ((c_weight < n->next->data.second()) || *c_from < *(n->next->data.first().first())))):
+                        ((*(n_to) < *(c_to)) && (next == nullptr || ((c_weight < n->next->data.second()) || *c_to < *(n->next->data.first().second()))))):
+                    ((n_weight < c_weight) &&
+                        (next == nullptr || (((c_weight == next->data.second())?(*(c_to) < *(next->data.first().second())):(c_weight < n->next->data.second())))));
             });
         }
+
         for(auto i = sorted.begin(); i != nullptr; i = i->next){
             NodePair pair = i->data.first();
             int weight = i->data.second();
