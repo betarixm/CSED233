@@ -211,12 +211,21 @@ private:
         List<Pair<Node*, int>> _directedList;
         List<Node*> _kruskal;
         int _topoRefCount = 0;
+        bool isUndirectLinked(Node* target){
+            for(auto i = _undirectedList.begin(); i != nullptr; i=i->next){
+                if(i->data.first() == target){
+                    return true;
+                }
+            }
+            return false;
+        }
 
     public:
         explicit Node(const string& l) { _label = l; };
         string label() const { return _label; }
         int& topoRefCount (){ return _topoRefCount; };
         Node& undirectLink(Node* target, int weight){
+            if(isUndirectLinked(target)){ return *this; }
             _undirectedList.sortedPush(Pair<Node*, int>(target, weight), [](ListNode<Pair<Node*, int>>* n, Pair<Node*, int> cmp){
                 return (*(n->data.first()) < *(cmp.first()) && (n->next == nullptr || (*cmp.first() < *(n->next->data.first()))));
             });
