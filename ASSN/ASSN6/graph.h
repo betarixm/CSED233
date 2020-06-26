@@ -103,6 +103,14 @@ public:
         return false;
     }
 
+    void reset(){
+        for(ListNode<T>* i = l_begin, *k; i != nullptr; i = k){
+            k = i->next;
+            delete i;
+        }
+        l_size = 0;
+    }
+
 
     int size() const { return l_size; }
 
@@ -185,7 +193,7 @@ public:
 private:
     /////////////////////////////////////////////////////////
     //////  TODO: Add private members if required ///////////
-    const int INF = (unsigned int)~0 >> 1;
+    const long long INF = (~(unsigned int)0 >> 1) + 1;
 
     class Node{
     private:
@@ -272,7 +280,7 @@ private:
     string makeNodeStr(List<Node *>& target, string sep);
 
     using CheckVector = List<Node*>;
-    using Dist = Pair<Node*, int>;
+    using Dist = Pair<Node*, long long>;
     using DistArray = Dist*;
     using DijkVector = Pair<CheckVector*, DistArray>;
     using DijkList = List<DijkVector*>;
@@ -280,14 +288,6 @@ private:
         return new DijkVector(new CheckVector, new Dist[nodeList.size()]);
     }
 
-    void showDijkList(DijkList& l){
-        for(auto i = l.begin(); i != nullptr; i = i->next){
-            for(auto j = i->data->first()->begin(); j != nullptr; j = j->next){
-                cout << j->data->label();
-            }
-            cout << endl;
-        }
-    }
     void copyDijkVector(DijkVector& src, DijkVector& dst){
         for(auto i = src.first()->begin(); i != nullptr; i = i->next){
             dst.first()->append(i->data);
@@ -360,10 +360,11 @@ private:
                 int n_weight = n->data.second(), c_weight = cmp.second();
 
                 return (n_weight == c_weight)
-                       ?( (n_from->label() == c_from->label())
-                          ? (*(n_to) < *(c_to) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_to < *(n->next->data.first().second()))))
-                          : (*(n_from) < *(c_from) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_from < *(n->next->data.first().first())))))
-                       :(n_weight < c_weight && (n->next == nullptr || (c_weight < n->next->data.second())));
+                       ?( (n_to->label() == c_to->label())
+                          ? (*(n_from) < *(c_from) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_from < *(n->next->data.first().first()))))
+                          : (*(n_to) < *(c_to) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_to < *(n->next->data.first().second()))))
+                        )
+                        :(n_weight < c_weight && (n->next == nullptr || (c_weight < n->next->data.second())));
             });
         }
         for(auto i = sorted.begin(); i != nullptr; i = i->next){

@@ -11,6 +11,11 @@ using namespace std;
 
 /*  Write your codes if you have additional functions  */
 
+template<typename T>
+T min(T& x, T& y){
+    return (x < y) ? (x) : (y);
+}
+
 Graph::Node *Graph::makeNode(const string &label) {
     Node* tmp = new Node(label);
     nodeList.sortedPush(tmp, [](ListNode<Node*>* n, Node* cmp){
@@ -261,7 +266,42 @@ string Graph::getAllShortestPaths() {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
-    return "";
+    Index<Node*> index (nodeList);
+    auto weight = new long long *[nodeList.size()];
+    for(int i = 0; i <nodeList.size(); i++){
+        weight[i] = new long long[nodeList.size()];
+        for(int j = 0; j < nodeList.size(); j++){
+            weight[i][j] = (i == j) ? (0) : (((long long)INF) * 2 + 1);
+        }
+    }
+
+    for(auto i = nodeList.begin(); i != nullptr; i = i->next){
+        for(auto j = i->data->directedList().begin(); j != nullptr; j = j->next){
+            weight[index[i->data]][index[j->data.first()]] = j->data.second();
+        }
+    }
+
+    for(int k = 0; k < nodeList.size(); k++){
+        for(int i = 0; i < nodeList.size(); i++){
+            for(int j = 0; j < nodeList.size(); j++){
+                weight[i][j] = min(weight[i][j],
+                        (weight[i][k] >= INF || weight[k][j] >= INF) ? (INF) :(weight[i][k] + weight[k][j]));
+            }
+        }
+    }
+
+    string result;
+    for(int i = 0; i < nodeList.size(); i++){
+        for(int j = 0; j < nodeList.size(); j++){
+
+            result += (weight[i][j] >= (long long)INF) ? ("INF") : (to_string(weight[i][j]));
+            result += " ";
+        }
+        result.pop_back();
+        result += "\n";
+    }
+    result.pop_back();
+    return result;
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
@@ -271,9 +311,8 @@ int Graph::primMST(ofstream &fout, string startNode) {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
-    List<Pair<Pair<Node*, Node*>, int>> sorted;
+    List<NodeWeight> sorted;
     List<Node*> visit;
-    List<string> resultStrList;
     int length = 0;
 
     Node* start = getNodeByLabel(startNode);
@@ -310,6 +349,10 @@ int Graph::kruskalMST(ofstream &fout) {
         string s = from->label() + " " + to->label()+ " " + to_string(weight);
         resultStrList.append(s);
         length += weight;
+    }
+
+    for(auto i = nodeList.begin(); i != nullptr; i = i->next){
+        i->data->kruskal().reset();
     }
 
     string result = makeLexiStr(resultStrList, "\n");
