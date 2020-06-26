@@ -237,8 +237,8 @@ void Graph::PRIM(ofstream &fout, Graph::Node *target, List<NodeWeight> &sorted, 
 
             return (n_weight == c_weight)?
                    (   (n_to->label() == c_to->label())?
-                       ((*(n_from) < *(c_from)) && (next == nullptr || ((c_weight < n->next->data.second()) || *c_from < *(n->next->data.first().first())))):
-                       ((*(n_to) < *(c_to)) && (next == nullptr || ((c_weight < n->next->data.second()) || *c_to < *(n->next->data.first().second()))))):
+                       ((*(n_from) < *(c_from)) && (next == nullptr || ((c_weight < n->next->data.second())))):
+                       ((*(n_to) < *(c_to)) && (next == nullptr || ((c_weight < n->next->data.second()))))):
                    ((n_weight < c_weight) &&
                     (next == nullptr || (((c_weight == next->data.second())?((c_to->label() == next->data.first().second()->label())?((*(c_from) < *(next->data.first().first()))):(*(c_to) < *(next->data.first().second()))):(c_weight < n->next->data.second())))));
         });
@@ -276,10 +276,15 @@ void Graph::initWeightList(List<NodeWeight> &weightList) {
                 int n_weight = n->data.second(), c_weight = cmp.second();
 
                 return (n_weight == c_weight)
-                       ?( (n_from->label() == c_from->label())
-                          ? (*(n_to) < *(c_to) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_to < *(n->next->data.first().second()))))
-                          : (*(n_from) < *(c_from) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_from < *(n->next->data.first().first())))))
-                       :(n_weight < c_weight && (n->next == nullptr || (c_weight < n->next->data.second())));
+                       ?( (n_to->label() == c_to->label())
+                          ? (*(n_from) < *(c_from) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_from < *(n->next->data.first().first()))))
+                            : (*(n_to) < *(c_to) && (n->next == nullptr || ((c_weight < n->next->data.second()) || *c_to < *(n->next->data.first().second()))))
+                            )
+                       :(n_weight < c_weight && (n->next == nullptr || (
+                               (c_weight == n->next->data.second())?
+                               (
+                                       (c_to->label() == n->next->data.first().second()->label())?(c_from->label() <= n->next->data.first().first()->label()):(c_to->label() <= n->next->data.first().second()->label())
+                               ):(c_weight < n->next->data.second()))));
             });
         }
     }
