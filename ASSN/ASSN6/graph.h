@@ -415,7 +415,7 @@ private:
                         ((*(n_from) < *(c_from)) && (next == nullptr || ((c_weight < n->next->data.second()) || *c_from < *(n->next->data.first().first())))):
                         ((*(n_to) < *(c_to)) && (next == nullptr || ((c_weight < n->next->data.second()) || *c_to < *(n->next->data.first().second()))))):
                     ((n_weight < c_weight) &&
-                        (next == nullptr || (((c_weight == next->data.second())?(*(c_to) < *(next->data.first().second())):(c_weight < n->next->data.second())))));
+                        (next == nullptr || (((c_weight == next->data.second())?((c_to->label() == next->data.first().second()->label())?((*(c_from) < *(next->data.first().first()))):(*(c_to) < *(next->data.first().second()))):(c_weight < n->next->data.second())))));
             });
         }
 
