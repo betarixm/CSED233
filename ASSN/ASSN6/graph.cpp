@@ -112,8 +112,12 @@ Graph::Node *Graph::getNodeByLabel(const string &label) {
 }
 
 bool isInteger(const string &str) {
-    for(char i: str){ if(!isdigit(i)) { return false; } }
-    return true;
+    try{
+        stoi(str);
+        return true;
+    } catch( ... ){
+        return false;
+    }
 }
 
 ///////////      End of Implementation      /////////////
@@ -198,21 +202,38 @@ string Graph::getTopologicalSort() {
     /////////////////////////////////////////////////////////
     //////////  TODO: Implement From Here      //////////////
 
-    List<Node*> visit;
-    List<string> resultStrList;
-    for(auto i = nodeList.begin(); i != nullptr; i = i->next){
-        if(visit.isExist(i->data)){ continue; }
-        List<Node*> result;
-        List<Node*> test;
+    List<Node*> result;
 
-        if(!TOPO(i->data, visit, test, result)){
-            return "error";
-        };
-        resultStrList.append(makeNodeStr(result, " "));
+    while(true){
+        bool isModified = false;
+
+        initTopoRefCount();
+        updateTopoRefCount(result);
+
+        if([&](){for(auto i = nodeList.begin(); i != nullptr; i = i->next){
+            if(result.isExist(i->data)) { continue;}
+            if(i->data->topoRefCount() == 0){
+                result.append(i->data);
+                return true;
+            }
+        }
+            return false;
+        }()){ isModified = true; }
+
+        if(!isModified) break;
     }
 
-    string result = makeLexiStr(resultStrList, "\n");
-    return result;
+    if (result.size() == 0){
+        return "error";
+    } else {
+        string resultStr;
+        for(auto i = result.begin(); i != nullptr; i = i->next){
+            resultStr += i->data->label() + " ";
+        }
+        resultStr.pop_back();
+        return resultStr;
+    }
+
 
     ///////////      End of Implementation      /////////////
     /////////////////////////////////////////////////////////
@@ -231,28 +252,15 @@ string Graph::getShortestPath(string source, string destination) {
     List<string> resultStrList;
     Index<Node*> index(nodeList);
     DijkList l;
-    DijkVector* v = initVector();
+    DijkVector* v = initDijkVector();
 
-    for(int i = 0; i < nodeList.size(); i++){
-        v->second()[i].first() = index[i];
-        v->second()[i].second() = INF;
-    }
-
-    v->second()[index[src]].first() = src;
+    v->second()[index[src]].first()->append(src);
     v->second()[index[src]].second() = 0;
-
 
     dijk(src, dst, 0, *v, l, index);
 
     for(auto i = l.begin(); i != nullptr; i = i->next){
-        string result;
-
-        for(Node* target = dst; target != src; target = i->data->second()[index[target]].first()){
-            result = target->label() + " " + result;
-        }
-        result = src->label() + " " + result;
-        result += to_string(i->data->second()[index[dst]].second());
-        resultStrList.append(result);
+        dijkString(dst->label() + " " + to_string(i->data->second()[index[dst]].second()), dst, src, *(i->data), resultStrList, index);
     }
 
     string result = makeLexiStr(resultStrList, "\n");
@@ -347,7 +355,7 @@ int Graph::kruskalMST(ofstream &fout) {
         from->kruskal().append(to);
         to->kruskal().append(from);
         string s = from->label() + " " + to->label()+ " " + to_string(weight);
-        resultStrList.append(s);
+        fout << s << endl;
         length += weight;
     }
 
@@ -355,8 +363,6 @@ int Graph::kruskalMST(ofstream &fout) {
         i->data->kruskal().reset();
     }
 
-    string result = makeLexiStr(resultStrList, "\n");
-    fout << result << endl;
     return length;
 
     ///////////      End of Implementation      /////////////

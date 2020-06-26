@@ -114,6 +114,14 @@ public:
 
     int size() const { return l_size; }
 
+    List operator=(List& target){
+        target.reset();
+        for(auto i = l_begin; i != nullptr; i = i->next){
+            target.append(i->data);
+        }
+        return *this;
+    }
+
 };
 
 template<typename X, typename Y>
@@ -202,11 +210,12 @@ private:
         List<Pair<Node*, int>> _undirectedList;
         List<Pair<Node*, int>> _directedList;
         List<Node*> _kruskal;
+        int _topoRefCount = 0;
 
     public:
         explicit Node(const string& l) { _label = l; };
         string label() const { return _label; }
-
+        int& topoRefCount (){ return _topoRefCount; };
         Node& undirectLink(Node* target, int weight){
             _undirectedList.sortedPush(Pair<Node*, int>(target, weight), [](ListNode<Pair<Node*, int>>* n, Pair<Node*, int> cmp){
                 return (*(n->data.first()) < *(cmp.first()) && (n->next == nullptr || (*cmp.first() < *(n->next->data.first()))));
@@ -250,28 +259,17 @@ private:
 
     void recurDFS(Node* target, List<Node*>& visit, List<Node*>& result);
 
-    bool TOPO(Node* target, List<Node*>& visit, List<Node*>& test, List<Node*>& result){
-        bool isDone = true;
-        test.sortedPush(target, [](ListNode<Node*>* n, Node* cmp){
-            return (*(n->data) < *cmp && (n->next == nullptr || (*cmp < *(n->next->data))));
-        });
-        visit.append(target);
-        result.append(target);
+    void initTopoRefCount(){
+        for(auto i = nodeList.begin(); i != nullptr; i = i->next){ i->data->topoRefCount() = 0; }
+    }
 
-        for(auto i = target->directedList().begin(); i != nullptr; i = i->next){
-            if(visit.isExist(i->data.first())) { return false; }
-            test.sortedPush(i->data.first(), [](ListNode<Node*>* n, Node* cmp){
-                return (*(n->data) < *cmp && (n->next == nullptr || (*cmp < *(n->next->data))));
-            });
+    void updateTopoRefCount(List<Node*>& v){
+        for(auto i = nodeList.begin(); i != nullptr; i = i->next){
+            if(v.isExist(i->data)) { continue; }
+            for(auto j = i->data->directedList().begin(); j != nullptr; j=j->next){
+                j->data.first()->topoRefCount() += 1;
+            }
         }
-
-        for(auto i = test.begin(); i != nullptr; i = i->next){
-            if(result.isExist(i->data)){ continue; }
-            isDone = TOPO(i->data, visit, test, result);
-            break;
-        }
-
-        return isDone;
     }
 
     string sort(string* tmp, int length, string sep);
@@ -280,13 +278,11 @@ private:
     string makeNodeStr(List<Node *>& target, string sep);
 
     using CheckVector = List<Node*>;
-    using Dist = Pair<Node*, long long>;
+    using PathVector = List<Node*>;
+    using Dist = Pair<PathVector*, long long>;
     using DistArray = Dist*;
     using DijkVector = Pair<CheckVector*, DistArray>;
     using DijkList = List<DijkVector*>;
-    DijkVector* initVector(){
-        return new DijkVector(new CheckVector, new Dist[nodeList.size()]);
-    }
 
     void copyDijkVector(DijkVector& src, DijkVector& dst){
         for(auto i = src.first()->begin(); i != nullptr; i = i->next){
@@ -297,39 +293,81 @@ private:
         }
     }
 
-    void dijk(Node* target, Node* dst, int d, DijkVector& v, DijkList& l, Index<Node*>& index){
-        int targetDist = d;
-        auto k = initVector();
-
-        copyDijkVector(v, *k);
-        k->first()->append(target);
-        for(auto fre = target->directedList().begin(); fre != nullptr; fre = fre->next){
-            if(k->first()->isExist(fre->data.first())) { continue; }
-            int tmp = targetDist + fre->data.second();
-            if(tmp < k->second()[index[fre->data.first()]].second()){
-                k->second()[index[fre->data.first()]] = Dist(target, tmp);
-            }
+    DijkVector* initDijkVector(){
+        auto v = new DijkVector(new CheckVector, new Dist[nodeList.size()]);
+        for(int i = 0; i < nodeList.size(); i++){
+            v->second()[i].first() = new PathVector;
+            v->second()[i].second() = INF;
         }
 
-        if(target == dst) {
-            l.append(k);
+        return v;
+    }
+    void resetDijkVector(DijkVector& v){
+        v.first()->reset();
+        delete v.first();
+
+        for(int i = 0; i < nodeList.size(); i++){
+            v.second()[i].first()->reset();
+            delete v.second()[i].first();
+        }
+        delete[] v.second();
+    }
+
+    void dijkString(string origin, Node* target, Node* src, DijkVector& v, List<string>& result, Index<Node*>& index){
+        if(target == src){
+            result.append(origin);
             return;
         }
 
-        Dist min = Dist(nullptr, INF);
+        PathVector* p = v.second()[index[target]].first();
+        for(auto i = p->begin(); i != nullptr; i = i->next){
+            string label = i->data->label() + " " + origin;
+            dijkString(label, i->data, src, v, result, index);
+        }
+    }
+
+    void dijk(Node* target, Node* dst, long long targetDist, DijkVector& v, DijkList& l, Index<Node*>& index){
+        auto k = initDijkVector();
+        copyDijkVector(v, *k);
+
+        CheckVector* check = k->first();
+        DistArray distArray = k->second();
+
+        check->append(target);
+
+        for(auto fri = target->directedList().begin(); fri != nullptr; fri = fri->next){
+            Dist* current = &(distArray[index[fri->data.first()]]);
+            long long test = targetDist + fri->data.second();
+            long long orin = current->second();
+
+            if(test < orin){
+                current->second() = test;
+                current->first()->reset(), current->first()->append(target);
+            } else if (test == orin) {
+                if(!current->first()->isExist(target)) { current->first()->append(target); }
+            }
+        }
+
+        if(check->size() == nodeList.size()){
+            l.append(k); return;
+        }
+
+        long long min = INF;
         for(auto i = nodeList.begin(); i != nullptr; i = i->next){
-            if(k->first()->isExist(i->data)) { continue; }
-            if(k->second()[index[i->data]].second() < min.second()){
-                min = k->second()[index[i->data]];
+            if(check->isExist(i->data)){ continue; }
+            long long weight = k->second()[index[i->data]].second();
+            if(weight < min){
+                min = weight;
             }
         }
 
         for(auto i = nodeList.begin(); i != nullptr; i = i->next){
-            if(k->first()->isExist(i->data)) { continue; }
-            if(k->second()[index[i->data]].second() == min.second()){
-                dijk(i->data, dst, min.second(),*k, l, index);
+            if(check->isExist(i->data)){ continue;}
+            if(k->second()[index[i->data]].second() == min){
+                dijk(i->data, dst, min, *k, l, index);
             }
         }
+
     }
 
     bool checkPath(Node* src, Node* dst){
