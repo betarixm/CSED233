@@ -325,7 +325,7 @@ private:
 
     void dijkString(string origin, Node* target, Node* src, DijkVector& v, List<string>& result, Index<Node*>& index){
         if(target == src){
-            result.append(origin);
+            if (!result.isExist(origin)){result.append(origin);}
             return;
         }
 

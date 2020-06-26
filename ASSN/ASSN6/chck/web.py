@@ -25,7 +25,8 @@ def gen(target: str):
     return target
 
 
-aa = """[('A-B', 4), ('A-H', 8), ('B-H', 11), ('B-C', 8), ('C-D', 7), ('D-F', 14), ('D-E', 9), ('E-F', 10), ('H-G', 1), ('G-F', 2), ('C-F', 4), ('C-I', 2), ('H-I', 7), ('I-G', 6), ('MST', 'A')]"""
+aa = """[('A-B',4),('B-C',9),('C-E',-2),('E-C',8),('B-Z',1),('A-Z',4),('Z-C',3),('B-F',6),('A-R',7),('R-B',-4),('B-R',8),('R-F',7),('F-E',6),('E-F',5),('E-D',6),('A', 'Z')]
+"""
 
 aa = aa.replace(" ", "")
 tmp = cmd_to_site(aa) if aa[0] == "[" else site_to_cmd(aa)
